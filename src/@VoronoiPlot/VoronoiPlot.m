@@ -1,6 +1,6 @@
 % Voronoi tessellation.
 %
-% $Id: Voronoi.m 38 2010-06-14 10:22:39Z ymishin $
+% $Id$
 
 classdef VoronoiPlot < Voronoi
     

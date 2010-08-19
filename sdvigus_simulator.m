@@ -1,7 +1,7 @@
 function sdvigus_simulator(model_dir, vrb, ncpu, do_exit)
 % Sdvigus simulator.
 %
-% $Id: sdvig_simulator.m 47 2010-06-24 11:20:56Z ymishin $
+% $Id$
 
 % verbosity level
 global verbose;

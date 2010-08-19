@@ -1,7 +1,7 @@
 function build_bc(obj)
 % Build BC vectors (equations and corresponding values).
 %
-% $Id: construct_bc.m 25 2010-06-04 22:51:28Z ymishin $
+% $Id$
 
 % boundary nodes
 node_bnd = obj.grids.stokes.node_bnd;

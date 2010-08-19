@@ -1,7 +1,7 @@
 function sdvigus_postproc(model_dir, vrb, ncpu, do_exit)
 % Sdvigus postprocessor.
 %
-% $Id: sdvig_preproc.m 42 2010-06-14 12:06:56Z ymishin $
+% $Id$
 
 % verbosity level
 global verbose;

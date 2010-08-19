@@ -1,7 +1,7 @@
 function sdvigus_preproc(model_dir, vrb, do_exit)
 % Sdvigus preprocessor.
 %
-% $Id: sdvig_preproc.m 47 2010-06-24 11:20:56Z ymishin $
+% $Id$
 
 % verbosity level
 global verbose;

@@ -1,7 +1,7 @@
 function plot_field(obj, f, postproc)
 % Plot data field stored on Stokes grid.
 %
-% $Id: output.m 38 2010-06-14 10:22:39Z ymishin $
+% $Id$
 
 desc = postproc.(f);
 model = postproc.model_name;
