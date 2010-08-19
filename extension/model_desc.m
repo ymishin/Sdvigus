@@ -10,10 +10,10 @@ create_mtrl = true;
 create_ctrl = true;
 
 % domain dimensions
-xmin = 0.0;
-xmax = 1.0;
-ymin = 0.0;
-ymax = 2.0;
+xmin = -1.5;
+xmax =  1.5;
+ymin =  0.0;
+ymax =  1.0;
 
 % change size of the domain according to normal componenets of velocity BC
 change_domain_size = true;
@@ -23,8 +23,8 @@ change_domain_size = true;
 % finest grid level and have to be Mx * 2^(jmax-1) and My * 2^(jmax-1) in
 % x- and y-directions respectively (Mx and My are arbitrary and determine
 % resolution at coarsest grid level)
-num_elem_x = 128;
-num_elem_y = 256;
+num_elem_x = 192;
+num_elem_y =  64;
 
 % total number of grid levels in case of multilevel grid
 % if jmax equals 1 - simple equidistant grid will be used
@@ -42,9 +42,9 @@ adapt_grid = true;
 % criteria for adaptive grid refinement
 % to enable a criterion - corresponding value should be > 0, this value 
 % will be normalized and used as a threshold during refinement procedure
-criter_viscosity = 1e-3;
-criter_velocity_x = 1e-1;
-criter_velocity_y = 1e-1;
+criter_viscosity = [];
+criter_velocity_x = 1e-3;
+criter_velocity_y = 1e-3;
 
 % element type
 % 1 - Q1P0  (bilinear velocity, constant discontinuous pressure)
@@ -57,10 +57,10 @@ elem_type = 3;
 
 % velocity boundary conditions
 % unconstrained velocities have to be set to []
-bvx_left   = 0.0; bvy_left   =  [];
-bvx_right  = 0.0; bvy_right  =  [];
-bvx_bottom =  []; bvy_bottom = 0.0;
-bvx_top    =  []; bvy_top    = 0.0;
+bvx_left   = -0.05; bvy_left   =  [];
+bvx_right  =  0.05; bvy_right  =  [];
+bvx_bottom =    []; bvy_bottom = 0.0;
+bvx_top    =    []; bvy_top    =  [];
 
 % make boundary exits
 left_exit  = false;
@@ -72,7 +72,7 @@ Fext(2) = -10.0;  % y-direction
 
 % TIME PARAMETERS
 % total time of simulation
-total_time = 10.0;
+total_time = 4.0;
 % time step
 % 'dt_default' allows to set constant time step manually
 % 'courant' is Courant number and can be from 0.0 (meaningless) to 1.0
@@ -80,7 +80,7 @@ total_time = 10.0;
 % time step will be minimum between dt_default and one calculated based on 
 % Courant number
 dt_default = [];
-courant    = 0.7;
+courant    = 0.5;
 
 % initial particle density per element at finest level in x- and y-directions
 % (total particle density per element equals product of these two)
@@ -89,7 +89,7 @@ num_part_elem_y = 3;
 
 % random noise for particle distribution
 % can be from 0.0 (no noise) to 1.0 (highest noise)
-part_noise = 0.2;
+part_noise = 0.0;
 
 % zones of initial material distribution
 % 1. each zone is specified by the following format:
@@ -103,8 +103,15 @@ part_noise = 0.2;
 % 4. if there are no constraints the zone will be equal to the whole domain
 % 5. in case of zones overlap the following zone in the list has the priority
 mtrl_zones = { ...
-    { 1 }, ...
-    { 2, @(x,y)(x > 0.3), @(x,y)(x < 0.7), @(x,y)(y > 1.3), @(x,y)(y < 1.7) } };
+    { 1, @(x,y)(0.7 <= y < 0.8) }, ...
+    { 2, @(x,y)(0.6 <= y < 0.7) }, ...
+    { 1, @(x,y)(0.5 <= y < 0.6) }, ...
+    { 2, @(x,y)(0.4 <= y < 0.5) }, ...
+    { 1, @(x,y)(0.3 <= y < 0.4) }, ...
+    { 2, @(x,y)(0.2 <= y < 0.3) }, ...
+    { 1, @(x,y)(0.1 <= y < 0.2) }, ...
+    { 2, @(x,y)(0.0 <= y < 0.1) }, ...
+    { 3, @(x,y)(x > -0.02), @(x,y)(x < 0.02), @(x,y)(y < 0.04) } };
 
 % material library
 %   mtrl_dens      - density
@@ -116,24 +123,39 @@ mtrl_zones = { ...
 %   mtrl_phi       - friction angle
 %   mtrl_weakhard  - strain weakening / hardening
 %
-% material 1
+% materials 1,2 (stripes)
 m = 1;
-mtrl_dens(m) = 1.0;
-mtrl_visc(m) = 1.0;
-% material 2 (block)
+mtrl_dens(m)          = 1.0;
+mtrl_visc(m)          = 100.0;
+mtrl_n(m)             = 1.0;
+mtrl_cohesion(1:2,m)  = [4.0 1.0];
+mtrl_phi(1:2,m)       = atan(0.0);
+mtrl_weakhard(1:2,m)  = [0.0 0.05];
 m = 2;
-mtrl_dens(m) = 3.0;
-mtrl_visc(m) = 10000.0;
+mtrl_dens(m)          = 1.0;
+mtrl_visc(m)          = 100.0;
+mtrl_n(m)             = 1.0;
+mtrl_cohesion(1:2,m)  = [4.0 1.0];
+mtrl_phi(1:2,m)       = atan(0.0);
+mtrl_weakhard(1:2,m)  = [0.0 0.05];
+% material 3 (weak inclusion)
+m = 3;
+mtrl_dens(m)          = 1.0;
+mtrl_visc(m)          = 1.0;
+mtrl_n(m)             = 1.0;
+mtrl_cohesion(1:2,m)  = Inf;
+mtrl_phi(1:2,m)       = 0.0;
+mtrl_weakhard(1:2,m)  = 0.0;
 % viscosity and density for empty space (air)
 dens0 = 0.00;
 visc0 = 0.01;
 
 % non-linear rheologies
-yielding_rheol = false;
+yielding_rheol = true;
 powerlaw_rheol = false;
 
 % Voronoi tessellation to maintain distribution of particles
-voronoi_enabled = true;
+voronoi_enabled = false;
 % resolution of Voronoi cells
 voronoi_res_x = 20;
 voronoi_res_y = 20;
