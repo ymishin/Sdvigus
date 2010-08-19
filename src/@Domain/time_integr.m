@@ -1,4 +1,4 @@
-function update(obj, dt)
+function time_integr(obj, dt)
 % Update size of the domain if necessary.
 %
 % $Id$

@@ -1,4 +1,4 @@
-function stokes = build_system_matrices(obj, elem_visc, elem_dens)
+function build_system_matrices(obj, elem_visc, elem_dens)
 % Construct all system matrices for Stokes system.
 %
 % $Id$
@@ -14,7 +14,8 @@ elem2node = obj.grids.stokes.elem2node;
 num_elem = size(elem2node, 2);
 
 % element type
-switch obj.elem_type
+elem_type = obj.elem_type;
+switch elem_type
     case 1
         % Q1P0
         num_inp = 4;                  % integration points
@@ -74,8 +75,7 @@ D = [ 2  0  0; ...
 B = zeros(3, num_veq_el);
 elemA = zeros(num_veq_el, num_veq_el);
 elemQ = zeros(num_veq_el, num_peq_el);
-elemM = zeros(num_peq_el, num_peq_el);
-elemC = zeros(num_peq_el, num_peq_el);
+elemMC = zeros(num_peq_el, num_peq_el);
 elemRHS = zeros(num_veq_el, 1);
 n = ((num_veq_el + 1) * num_veq_el) / 2; % store only low triangle of A
 A_i = zeros(n, num_elem);
@@ -88,8 +88,7 @@ Q_s = zeros(n, num_elem);
 n = num_peq_el * num_peq_el;
 MC_i = zeros(n, num_elem);
 MC_j = zeros(n, num_elem);
-M_s = zeros(n, num_elem);
-C_s = zeros(n, num_elem);
+MC_s = zeros(n, num_elem);
 RHS = zeros(num_veq, 1);
 
 % auxiliary arrays for construction of matrices
@@ -126,17 +125,20 @@ for i = 1:num_inp
         % matrix Q
         BQ = dNvi(:);
         elemQ = elemQ - wdetJ * BQ * Npi;
-        % matrix M
-        elemM = elemM + wdetJ * Npi' * Npi;
-        % matrix C
-        elemC = elemC + wdetJ * (Npi - 0.25)' * (Npi - 0.25);
+        if (elem_type == 2)
+            % matrix C (Q1Q1)
+            elemMC = elemMC + wdetJ * (Npi - 0.25)' * (Npi - 0.25);
+        else
+            % matrix M (Q1P0, Q2P-1)
+            elemMC = elemMC + wdetJ * Npi' * Npi;
+        end
         % RHS
         r = obj.Fext * Nvi;
         elemRHS = elemRHS + wdetJ * r(:);
 end
 
-% % store element matrix A for reference element
-% stokes.elemA = elemA;
+% store element matrix A for reference element
+obj.elemA = elemA;
 
 % scaling factor for invJ and detJ
 if (obj.grids.stokes.jmax > 1)
@@ -170,8 +172,13 @@ for iel = 1:num_elem
     % matrices M and C
     MC_i(:,iel) = peq_el(MC_i_ind);
     MC_j(:,iel) = peq_el(MC_j_ind);
-    M_s(:,iel)  = sf(iel)^2 * elemM(:);
-    C_s(:,iel)  = (1/elem_visc(iel)) * sf(iel)^2 * elemC(:);
+    if (elem_type == 2)
+        % matrix C (Q1Q1)
+        MC_s(:,iel)  = (1/elem_visc(iel)) * sf(iel)^2 * elemMC(:);           
+    else
+        % matrix M (Q1P0, Q2P-1)
+        MC_s(:,iel)  = sf(iel)^2 * elemMC(:);
+    end
     
     % RHS
     RHS(veq_el) = RHS(veq_el) + elem_dens(iel) * sf(iel)^2 * elemRHS;
@@ -180,22 +187,28 @@ end
 
 % create matrices from vectors
 % A
-A = sparse(A_i(:), A_j(:), A_s(:), num_veq, num_veq);
-stokes.A = A + tril(A,-1)'; clear A; % TODO: should it really be here ?
-clear A_i A_j A_s;
+A = sparse(A_i(:), A_j(:), A_s(:), num_veq, num_veq); % lower triangular
+obj.A = A + tril(A,-1)';
+clear A A_i A_j A_s;
 % Q
-stokes.Q = sparse(Q_i(:), Q_j(:), Q_s(:), num_veq, num_peq);
+obj.Q = sparse(Q_i(:), Q_j(:), Q_s(:), num_veq, num_peq);
 clear Q_i Q_j Q_s;
-% M and C
-stokes.M = sparse(MC_i(:), MC_j(:), M_s(:), num_peq, num_peq);
-stokes.C = sparse(MC_i(:), MC_j(:), C_s(:), num_peq, num_peq);
-clear MC_i MC_j M_s C_s;
+% invM and C
+MC = sparse(MC_i(:), MC_j(:), MC_s(:), num_peq, num_peq);
+if (elem_type == 2)
+    % matrix C (Q1Q1)
+    obj.C = MC;
+else
+    % matrix invM (Q1P0, Q2P-1)
+    obj.invM = inv(diag(diag(MC)));
+end
+clear MC_i MC_j MC_s MC;
 % RHS
-stokes.RHS = RHS;
+obj.RHS = RHS;
 clear RHS;
 
 t = toc(t);
-if (verbose > 0)
+if (verbose > 1)
     fprintf('Construct system matrices for Stokes system ... %f\n', t);
 end
 

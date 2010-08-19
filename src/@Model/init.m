@@ -33,8 +33,9 @@ obj.stokes_sys = StokesSys();
 
 % and initialize them
 obj.domain.init(df, cf);
-obj.particles.init(df, mf, cf, obj.domain, obj.grids, obj.stokes_sys);
 obj.grids.init(df, cf, obj.domain, obj.particles, obj.stokes_sys);
+obj.particles.init(df, mf, cf, obj.domain, obj.grids, obj.stokes_sys);
+obj.particles.init_voronoi(cf);
 obj.stokes_sys.init(df, cf, obj.domain, obj.grids, obj.particles);
 
 end

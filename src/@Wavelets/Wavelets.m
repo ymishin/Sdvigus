@@ -6,20 +6,22 @@ classdef Wavelets < handle
     
     methods (Access = public, Static = true)
         
-        update_mask();
+        % returns updated mask(s) for physical field(s)
+        new_mask = update_mask(fmat, mask, jmax, balance_grid, ...
+                               refine_fully, eps);
         
-    end    
+    end
     
     methods (Access = private, Static = true)
         
-        % returns mask which corresponds to new adapted grid
-        mask = adapt_mask_2d(this, fmat, jmax, jmin, balanced, eps);
+        % construct adapted mask for transformed field
+        mask = adapt_mask_2d(fmat, jmax, jmin, balance_grid, refine_fully, eps);
         
         % forward linear wavelet transform in 2D
-        fmat = fwd_transform_2d(this, fmat, jmax, jmin, mask);
+        fmat = fwd_transform_2d(fmat, jmax, jmin, mask);
         
         % forward linear wavelet transform
-        fvec = fwd_transform_step(this, fvec, s, mask)
+        fvec = fwd_transform_step(fvec, s, mask)
         
     end
     

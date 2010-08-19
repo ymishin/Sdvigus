@@ -25,7 +25,7 @@ classdef Domain < handle
         output(obj, of);
         
         % update size of the domain
-        update(obj, dt);
+        time_integr(obj, dt);
         
     end
     

@@ -1,25 +1,23 @@
-% Main entry point class.
+% Postprocessor.
 %
 % $Id$
 
-classdef Model < handle
+classdef Postproc < dynamicprops
     
-    properties (Access = private)
+    properties (SetAccess = private)
         
         % name of the model
         model_name;
         
-        % time stepping parameters
-        nstep;
-        current_time;
-        dt;
-        total_time;
-        dt_default;
-        courant;
+        % description file
+        desc;
         
-        % output flags
-        output_enabled;
-        prec_output;
+        % time stepping parameters
+        nfile;
+        current_time;
+        
+        % folder for results
+        outdir;
         
         % main entities which constitute model
         domain;
@@ -32,24 +30,26 @@ classdef Model < handle
     methods (Access = public)
         
         % constructor
-        function obj = Model(model_name)
+        function obj = Postproc(model_name, desc)
             obj.model_name = model_name;
-            obj.init();
+            obj.desc = desc;
         end
         
-        % run simulation
+        % run postprocessor
         run(obj);
+        
+        % check if property exists
+        r = isprop(obj, prop);
         
     end
     
     methods (Access = private)
         
-        % compute time step
-        compute_dt(obj);
+        % read description file
+        desc_struct = read_desc(obj, desc);
         
-        % init and output
-        init(obj);
-        output(obj);
+        % read all data
+        read_data(obj, nfile, desc);
         
     end
     

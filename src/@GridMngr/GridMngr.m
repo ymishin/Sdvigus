@@ -4,7 +4,7 @@
 
 classdef GridMngr < handle
     
-    properties (SetAccess = private)
+    properties (SetAccess = protected)
         
         % Stokes grid
         stokes;
@@ -15,6 +15,7 @@ classdef GridMngr < handle
         
         % adaptive grid refinement
         adapt_grid;
+        adapt_criteria;
         
         % references to main entities
         domain;

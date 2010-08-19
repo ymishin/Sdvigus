@@ -4,7 +4,7 @@
 
 classdef Particles < handle
     
-    properties (SetAccess = private)
+    properties (SetAccess = protected)
         
         % all particles' properties
         data;
@@ -23,6 +23,10 @@ classdef Particles < handle
         % material library
         mtrl_lib;
         
+        % rheologies
+        yielding_flag;
+        powerlaw_flag;
+        
         % references to main entities
         domain;
         grids;
@@ -30,27 +34,32 @@ classdef Particles < handle
         
     end
     
-    methods (Access = public)        
+    methods (Access = public)
         
         % init and output
         init(obj, df, mf, cf, domain, grids, stokes_sys);
+        init_voronoi(obj, cf);
         output(obj, of);
         
-        % advection of particles
-        advect(obj, dt);
+        % time integratation (advection, etc.)
+        time_integr(obj, dt);
         
         % reorder particles in the domain
         reorder(obj);
         
-        % compute properties inside elements
-        [elem_visc, elem_dens] = interp2elem(obj);
+        % interpolate properties to nodes
+        node_data = interp2node(obj, mask, elem_order, prop);
         
-        %interp2node(obj);
-        %update_eff_visc(obj);
+        % average properties inside elements
+        [elem_visc, elem_dens] = average_visc_dens(obj);
+        elem_visc = update_visceff(obj, pressure);
+        
+        % compute strain rate invariant
+        %compute_strain_rate(obj);
         
     end
     
-    methods (Access = private)
+    methods (Access = protected)
         
         % change state of the data array
         reshape_data(obj, mode);
@@ -60,6 +69,10 @@ classdef Particles < handle
         
         % assign particles to actual elements in case of multilevel grid
         assign2elem(obj, elem2elemhl);
+        
+        % sub-functions for particles->nodes interpolation
+        node_data = interp2node_1(obj, mask, iprop);
+        node_data = interp2node_2(obj, mask, iprop);
         
     end
     

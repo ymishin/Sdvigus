@@ -1,13 +1,17 @@
-function bc = construct_bc(obj)
-% bc equations
+function build_bc(obj)
+% Build BC vectors (equations and corresponding values).
 %
-% $Id$
+% $Id: construct_bc.m 25 2010-06-04 22:51:28Z ymishin $
 
 % boundary nodes
 node_bnd = obj.grids.stokes.node_bnd;
 
 eq = [];
 val = [];
+
+% make boundary exits
+if (obj.bc_exits.left),  node_bnd{1} = node_bnd{1}(3:end); end;
+if (obj.bc_exits.right), node_bnd{2} = node_bnd{2}(3:end); end;
 
 % loop over sides of the domain
 % left - right - bottom - top
@@ -36,7 +40,7 @@ for i = 1:4
 end
 
 % store
-bc.eq  = eq';
-bc.val = val';
+obj.bc.eq  = eq';
+obj.bc.val = val';
 
 end

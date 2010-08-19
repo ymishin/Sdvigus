@@ -3,26 +3,28 @@ function run(obj)
 %
 % $Id$
 
+% generate grid
 if (obj.prec_output && obj.nstep > 0)
-    % generate grid
     obj.grids.generate();
 end
 
 while (obj.current_time < obj.total_time)
     
     fprintf('Current time ... %f\n', obj.current_time);
-
-    % update domain and advect particles
+    
+    % time integration
     if (obj.prec_output && obj.nstep > 0)
-        obj.particles.advect(obj.dt);
-        obj.domain.update(obj.dt);
+        obj.particles.time_integr(obj.dt);
+        obj.domain.time_integr(obj.dt);
     end
     
     % update particles distribution
     obj.particles.reorder();
     
     % adapt grid
-    obj.grids.adapt();
+    if (obj.nstep > 0)
+        obj.grids.adapt();
+    end
     
     % generate grid
     obj.grids.generate();
@@ -34,10 +36,10 @@ while (obj.current_time < obj.total_time)
     obj.compute_dt();
     obj.current_time = obj.current_time + obj.dt;
     
-    % update domain and advect particles
+    % time integration
     if (~obj.prec_output)
-        obj.particles.advect(obj.dt);
-        obj.domain.update(obj.dt);
+        obj.particles.time_integr(obj.dt);
+        obj.domain.time_integr(obj.dt);
     end
     
     % perform output

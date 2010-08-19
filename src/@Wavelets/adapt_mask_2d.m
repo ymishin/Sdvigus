@@ -1,13 +1,16 @@
-function mask = adapt_mask_2d(fmat, jmax, jmin, balanced, eps)
+function mask = adapt_mask_2d(fmat, jmax, jmin, balance_grid, refine_fully, eps)
 % Grid adaptation is performed for 2D field given by values 'fmat', which was
 % previously linearly transformed from level 'jmax' to level 'jmin'.
 % The new adapted grid is returned via 'mask' and contains: significant
 % nodes (as prescribed by 'eps'), adjacent to significant nodes, nodes at
 % all levels which are necessary to compute these significant and adjacent
 % nodes (reconstruction check criterion), and all nodes at lowest (coarsest)
-% level (c-coefficients). If 'balanced' is true the grid also will include
+% level (c-coefficients). If 'balance_grid' is true the grid also will include
 % nodes to balance it, i.e. there will be no boundaries between levels which
-% differ by more than 1.
+% differ by more than 1. If 'refine_fully' is true there will be no partially 
+% refined cells, i.e. if at least one sub-cell in some cell is refined - all 
+% other sub-cells in this cell also will be refined (this ensures grid 
+% consistency in case of 2nd order elements).
 %
 % For details see:
 % O.V.Vasilyev and C.Bowman, "Second Generation Wavelet Collocation Method for
@@ -75,18 +78,22 @@ for j = jmax:-1:(jmin+1)
     s2 = 2 * s;
     s4 = 2 * s2;
         
-    % (TODO: introduce true/false parameter to activate this piece)
-%     % *** d-coefficients at cells' centers ***
-%     for ix = (1+s2):s4:(nx-s2)
-%         % coefficients' indices
-%         ind = (1+s2:s4:ny-s2);
-%         ind = ind(mask(ind-s,ix-s) | mask(ind-s,ix+s) | ...
-%             mask(ind+s,ix-s) | mask(ind+s,ix+s));
-%         mask(ind-s,ix-s) = true;
-%         mask(ind-s,ix+s) = true;
-%         mask(ind+s,ix-s) = true;
-%         mask(ind+s,ix+s) = true;
-%     end
+    % ensure that there are no partially refined cells
+    if (refine_fully)
+        % d-coefficients at cells' centers
+        for ix = (1+s2):s4:(nx-s2)
+            % coefficients' indices
+            ind = (1+s2:s4:ny-s2);
+            % find partially refined cells
+            ind = ind(mask(ind-s,ix-s) | mask(ind-s,ix+s) | ...
+                      mask(ind+s,ix-s) | mask(ind+s,ix+s));
+            % refine all sub-cells in partially refined cells
+            mask(ind-s,ix-s) = true;
+            mask(ind-s,ix+s) = true;
+            mask(ind+s,ix-s) = true;
+            mask(ind+s,ix+s) = true;
+        end
+    end
     
     % *** d-coefficients at cells' centers ***
     for ix = (1+s):s2:(nx-s)
@@ -109,7 +116,7 @@ for j = jmax:-1:(jmin+1)
         % mark necessary nodes
         mask(iy,[ind-s ind+s]) = true;
         % mark nodes at lower level to balance the grid
-        if (balanced && (iy > 1) && (iy < ny))
+        if (balance_grid && (iy > 1) && (iy < ny))
             mask([iy-s2 iy+s2],[ind-s ind+s]) = true;
         end
     end    
@@ -122,7 +129,7 @@ for j = jmax:-1:(jmin+1)
         % mark necessary nodes
         mask([ind-s ind+s],ix) = true;
         % mark nodes at lower level to balance the grid
-        if (balanced && (ix > 1) && (ix < nx))
+        if (balance_grid && (ix > 1) && (ix < nx))
             mask([ind-s ind+s],[ix-s2 ix+s2]) = true;
         end
     end

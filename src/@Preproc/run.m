@@ -74,10 +74,6 @@ if (create_init)
     part_coord(free,:) = [];
     clear free;
     
-    % particles properties according to types
-    part_visc = mtrl_visc(part_type)';
-    part_dens = mtrl_dens(part_type)';
-    
     % save initial setup file
     if (exist('init_fname', 'var'))
         fname = init_fname;
@@ -93,17 +89,43 @@ if (create_init)
     hdf5write(fname, '/grids/mask', uint8(mask), w, a);
     hdf5write(fname, '/grids/elem_type', elem_type, w, a);
     hdf5write(fname, '/grids/velocity', 0, w, a);
-    hdf5write(fname, '/grids/pressure', 0, w, a);    
+    hdf5write(fname, '/grids/pressure', 0, w, a);
     hdf5write(fname, '/particles/coord', part_coord, w, a);
     hdf5write(fname, '/particles/type', uint8(part_type), w, a);
-    hdf5write(fname, '/particles/visc', part_visc, w, a);
-    hdf5write(fname, '/particles/dens', part_dens, w, a);
+    if (yielding_rheol || powerlaw_rheol)
+        part_visc = mtrl_visc(part_type)';
+        hdf5write(fname, '/particles/visc', part_visc, w, a);
+        z = zeros(size(part_type));
+        hdf5write(fname, '/particles/strain_rate', z, w, a);
+        if (yielding_rheol)
+            hdf5write(fname, '/particles/strain_plast', z, w, a);
+        end
+    end
+    
+    % number of the model file to start from
+    csvwrite('start_from', 0);
     
 end
 
 % *************** MATERIAL LIBRARY ***************
 if (create_mtrl)
     
+    % for powerlaw rheology
+    if (~exist('mtrl_n','var') || isempty(mtrl_n))
+        mtrl_n = ones(size(mtrl_visc));
+    end
+    
+    % for yielding rheology
+    if (~exist('mtrl_cohesion','var') || isempty(mtrl_cohesion))
+        mtrl_cohesion = Inf(2,length(mtrl_visc));
+    end
+    if (~exist('mtrl_phi','var') || isempty(mtrl_phi))
+        mtrl_phi = zeros(2,length(mtrl_visc));
+    end
+    if (~exist('mtrl_weakhard','var') || isempty(mtrl_weakhard))
+        mtrl_weakhard = zeros(2,length(mtrl_visc));
+    end
+
     % save materal library file
     if (exist('mtrl_fname', 'var'))
         fname = init_fname;
@@ -115,6 +137,10 @@ if (create_mtrl)
     hdf5write(fname, '/visc', mtrl_visc, w, a);
     hdf5write(fname, '/dens0', dens0, w, a);
     hdf5write(fname, '/visc0', visc0, w, a);
+    hdf5write(fname, '/powerlaw/n', mtrl_n, w, a);    
+    hdf5write(fname, '/yielding/cohesion', mtrl_cohesion, w, a);
+    hdf5write(fname, '/yielding/phi', mtrl_phi, w, a);
+    hdf5write(fname, '/yielding/weakhard', mtrl_weakhard, w, a);
     
 end
 
@@ -155,17 +181,30 @@ if (create_ctrl)
         bv_top(2) = bvy_top; bv_top_free(2) = 0;
     end
     
+    % boundary exits
+    if (~exist('left_exit','var') || isempty(left_exit))
+        left_exit = false;
+    end
+    if (~exist('right_exit','var') || isempty(right_exit))
+        right_exit = false;
+    end
+    
     % time step
     if (isempty(dt_default)), dt_default = -1; end
-    if (isempty(courant)),    courant = -1;    end
+    if (isempty(courant)), courant = -1; end
     
     % Voronoi
     if (isempty(fixed_types)), fixed_types = -1; end
-    if (isempty(min_area)),    min_area = -1;    end
-    if (isempty(max_area))     max_area = -1;    end
+    if (isempty(min_area)), min_area = -1; end
+    if (isempty(max_area)), max_area = -1; end
     
     % adaptive grid refinement
     if (jmax == 1), adapt_grid = false; end
+    
+    % criteria for adaptive grid refinement
+    if (isempty(criter_viscosity)), criter_viscosity = 0; end
+    if (isempty(criter_velocity_x)), criter_velocity_x = 0; end
+    if (isempty(criter_velocity_y)), criter_velocity_y = 0; end
     
     % save control file
     if (exist('ctrl_fname', 'var'))
@@ -184,13 +223,26 @@ if (create_ctrl)
     hdf5write(fname, '/bc/bv_bottom_free', bv_bottom_free, w, a);
     hdf5write(fname, '/bc/bv_top', bv_top, w, a);
     hdf5write(fname, '/bc/bv_top_free', bv_top_free, w, a);
+    hdf5write(fname, '/bc/left_exit', uint8(left_exit), w, a);
+    hdf5write(fname, '/bc/right_exit', uint8(right_exit), w, a);
     hdf5write(fname, '/voronoi/enabled', uint8(voronoi_enabled), w, a);
+    hdf5write(fname, '/voronoi/res', [voronoi_res_x, voronoi_res_y], w, a);
     hdf5write(fname, '/voronoi/fixed_types', fixed_types, w, a);
     hdf5write(fname, '/voronoi/min_area', min_area, w, a);
     hdf5write(fname, '/voronoi/max_area', max_area, w, a);
-    hdf5write(fname, '/voronoi/res', [voronoi_res_x, voronoi_res_y], w, a);
     hdf5write(fname, '/grids/adapt_grid', uint8(adapt_grid), w, a);
     hdf5write(fname, '/grids/jmax', jmax, w, a);
+    hdf5write(fname, '/grids/criter_viscosity', criter_viscosity, w, a);
+    hdf5write(fname, '/grids/criter_velocity_x', criter_velocity_x, w, a);
+    hdf5write(fname, '/grids/criter_velocity_y', criter_velocity_y, w, a);
+    hdf5write(fname, '/solvers/PH/k', PH_k, w, a);
+    hdf5write(fname, '/solvers/PH/maxdiv', PH_maxdiv, w, a);
+    hdf5write(fname, '/solvers/PH/maxiter', PH_maxiter, w, a);
+    hdf5write(fname, '/solvers/nonlinear/norm', nonlinear_norm, w, a);
+    hdf5write(fname, '/solvers/nonlinear/tol', nonlinear_tol, w, a);
+    hdf5write(fname, '/solvers/nonlinear/maxiter', nonlinear_maxiter, w, a);
+    hdf5write(fname, '/rheologies/yielding', uint8(yielding_rheol), w, a);
+    hdf5write(fname, '/rheologies/powerlaw', uint8(powerlaw_rheol), w, a);
     hdf5write(fname, '/time/total_time', total_time, w, a);
     hdf5write(fname, '/time/dt_default', dt_default, w, a);
     hdf5write(fname, '/time/courant', courant, w, a);
@@ -198,8 +250,5 @@ if (create_ctrl)
     hdf5write(fname, '/output/prec', uint8(prec_output), w, a);
     
 end
-
-% number of the model file to start from
-csvwrite('start_from', 0);
 
 end

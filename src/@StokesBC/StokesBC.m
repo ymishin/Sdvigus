@@ -9,7 +9,7 @@ classdef StokesBC < handle
         % values of velocities at boundaries
         val;
         
-        % flags indicating un-constrained velocities
+        % flags indicating unconstrained velocities
         free;
         
     end

@@ -23,12 +23,12 @@ for j = jmax:-1:(jmin+1)
     
     % perform transform to lower level on X-slices
     for iy = 1:s:ny
-        fmat(iy,:) = forward_transform_step(fmat(iy,:), s, mask(iy,:));
+        fmat(iy,:) = Wavelets.fwd_transform_step(fmat(iy,:), s, mask(iy,:));
     end
     
     % perform transform to lower level on Y-slices
     for ix = 1:s:nx
-        fmat(:,ix) = forward_transform_step(fmat(:,ix), s, mask(:,ix));
+        fmat(:,ix) = Wavelets.fwd_transform_step(fmat(:,ix), s, mask(:,ix));
     end
     
 end

@@ -4,7 +4,7 @@
 
 classdef StokesSys < handle
     
-    properties (SetAccess = private)
+    properties (SetAccess = protected)
         
         % velocity and pressure
         velocity;
@@ -15,9 +15,20 @@ classdef StokesSys < handle
         
         % external force field
         Fext;
-
+        
         % boundary conditions
         stokes_bc;
+        bc_exits;
+        
+        % linear / non-linear flag
+        linear_flag;
+        
+        % parameters for solvers
+        solv_params;
+        
+        % all matrices and vectors required for solution
+        A; Q; invM; C; elemA; RHS; bc;
+        CV = 1; CP = 1;
         
         % references to main entities
         domain;
@@ -40,16 +51,21 @@ classdef StokesSys < handle
         
     end
     
-    methods (Access = private)
+    methods (Access = protected)
         
-        % build all system matrices
-        stokes = build_system_matrices(obj, elem_visc, elem_dens);
+        % build BC vectors
+        build_bc(obj);
         
-        %
-        bc = construct_bc(obj);
+        % build system and constraint matrices
+        build_system_matrices(obj, elem_visc, elem_dens);
+        build_constraint_matrices(obj);
+        update_A_matrix(obj, elem_visc);
         
-        % get solution
-        [v, p] = solve_linear(obj, stokes, bc)
+        % solvers' sub-routines
+        solve_nonlinear(obj);
+        solve_linear(obj);
+        solve_linear_coupled(obj);
+        solve_linear_PH(obj);
         
     end
     

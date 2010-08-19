@@ -1,4 +1,4 @@
-% Voronoi tessellation
+% Voronoi tessellation.
 %
 % $Id$
 

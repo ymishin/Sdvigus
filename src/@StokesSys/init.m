@@ -15,31 +15,37 @@ obj.elem_type = hdf5read(df, '/grids/elem_type');
 obj.velocity = hdf5read(df, '/grids/velocity');
 obj.pressure = hdf5read(df, '/grids/pressure');
 
+% perform non-linear iterations ?
+yielding_flag = logical(hdf5read(cf, '/rheologies/yielding'));
+powerlaw_flag = logical(hdf5read(cf, '/rheologies/powerlaw'));
+if (yielding_flag || powerlaw_flag)
+    obj.linear_flag = false;
+else
+    obj.linear_flag = true;
+end
+
+% parameters for non-linear iterations
+nonlinear_norm = hdf5read(cf, '/solvers/nonlinear/norm');
+switch nonlinear_norm
+    case 1, obj.solv_params.nonlinear_norm = 2;   % L2 norm
+    case 2, obj.solv_params.nonlinear_norm = Inf; % infinite norm
+end
+obj.solv_params.nonlinear_tol = hdf5read(cf, '/solvers/nonlinear/tol');
+obj.solv_params.nonlinear_maxiter = hdf5read(cf, '/solvers/nonlinear/maxiter');
+
+% parameters for Powell-Hestenes solver (Q1P0, Q2P-1)
+obj.solv_params.PH_k = hdf5read(cf, '/solvers/PH/k');
+obj.solv_params.PH_maxdiv = hdf5read(cf, '/solvers/PH/maxdiv');
+obj.solv_params.PH_maxiter = hdf5read(cf, '/solvers/PH/maxiter');
+
 % external force field
 obj.Fext = hdf5read(cf, '/Fext');
-
-% % element type
-% elem_type = hdf5read(df, '/grids/elem_type');
-% switch elem_type
-%     case 1
-%         % Q1P0
-%         obj.num_inp = 4;        % integration points
-%         obj.num_vnode_el = 4;   % velocity nodes
-%         obj.num_pnode_el = 1;   % pressure nodes
-%     case 2
-%         % Q1Q1
-%         obj.num_inp = 4;        % integration points
-%         obj.num_vnode_el = 4;   % velocity nodes
-%         obj.num_pnode_el = 4;   % pressure nodes
-%     case 3
-%         % Q2P-1
-%         obj.num_inp = 9;        % integration points
-%         obj.num_vnode_el = 9;   % velocity nodes
-%         obj.num_pnode_el = 3;   % pressure nodes
-% end
 
 % boundary conditions
 obj.stokes_bc = StokesBC();
 obj.stokes_bc.init(df, cf);
+% make boundary exits ?
+obj.bc_exits.left = logical(hdf5read(cf, '/bc/left_exit'));
+obj.bc_exits.right = logical(hdf5read(cf, '/bc/right_exit'));
 
 end
