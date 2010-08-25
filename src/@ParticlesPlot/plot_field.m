@@ -128,12 +128,22 @@ if (isfield(desc,'fname'))
 else
     fname = [model, '_', f, '_', num2str(nf, '%05d')];
 end
+if (isfield(desc,'opengl') && desc.opengl)
+    renderer = '-opengl';
+else
+    renderer = '-zbuffer';
+end
+if (isfield(desc,'tiff') && desc.tiff)
+    format = '-dtiff'; ext = '.tiff';
+else
+    format = '-djpeg'; ext = '.jpeg';
+end
 if (isfield(desc,'dpi'))
     rdpi = ['-r', num2str(desc.dpi)];
 else
     rdpi = '-r100';
 end
-print('-zbuffer', '-djpeg', rdpi, [outdir, '/', fname, '.jpg']);
+print(renderer, format, rdpi, [outdir, '/', fname, ext]);
 close(h);
 
 end
