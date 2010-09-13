@@ -133,17 +133,17 @@ if (isfield(desc,'opengl') && desc.opengl)
 else
     renderer = '-zbuffer';
 end
-if (isfield(desc,'tiff') && desc.tiff)
-    format = '-dtiff'; ext = '.tiff';
+if (isfield(desc,'fmt'))
+    fmt = ['-d', desc.fmt];
 else
-    format = '-djpeg'; ext = '.jpeg';
+    fmt = '-djpeg';
 end
 if (isfield(desc,'dpi'))
     rdpi = ['-r', num2str(desc.dpi)];
 else
     rdpi = '-r100';
 end
-print(renderer, format, rdpi, [outdir, '/', fname, ext]);
+print(renderer, fmt, rdpi, [outdir, '/', fname]);
 close(h);
 
 end
