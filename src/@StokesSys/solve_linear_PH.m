@@ -64,9 +64,9 @@ while (true)
     % restore hanging nodes DOFs
     v = CV * v;
     % compute divergence
-    div = Q' * v;
+    div = invM * Q' * v;
     % update pressure
-    p = p + k * invM * div;
+    p = p + k * div;
     % check convergence
     res = norm(div(:),Inf);
     j = j + 1;
