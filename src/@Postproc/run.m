@@ -39,11 +39,19 @@ for nfile = obj.first:obj.step:obj.last
     
     % *** properties from particles ***
     fields = {'material', 'viscosity', 'density', ...
-        'strain_rate', 'strain_plast'};
+              'strain_rate', 'strain_plast'};
     for i = 1:length(fields)
         f = fields{i};
         if (obj.isprop(f) && obj.(f).plot)
             obj.particles.plot_field(f, obj);
+        end
+    end
+    
+    % *** execute custom functions ***
+    if (obj.isprop('custom_funcs'))
+        custom_funcs = obj.custom_funcs;
+        for i = 1:length(custom_funcs)
+            custom_funcs{i}(obj);
         end
     end
     
