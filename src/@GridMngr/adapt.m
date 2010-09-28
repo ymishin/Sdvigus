@@ -70,6 +70,6 @@ if (any(any(new_mask ~= mask)))
 end
 
 t = toc(t);
-if (verbose > 1), fprintf('Grid adaptation ... %f\n', t); end;
+verbose.disp(['Grid adaptation ... ', num2str(t)], 2);
 
 end

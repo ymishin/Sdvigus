@@ -4,6 +4,7 @@ function solve_nonlinear(obj)
 % $Id$
 
 global verbose;
+t = tic;
 
 % parameters
 norm_p = obj.solv_params.nonlinear_norm;
@@ -18,9 +19,7 @@ num_elem = size(elem2node, 2);
 j = 0;
 obj.solve_linear();
 v = obj.velocity;
-if (verbose > 0)
-    fprintf('Non-linear iteration %3d (initial)\n', j);
-end
+verbose.disp('Non-linear iteration   0 (initial)', 2);
 
 while (true)
     
@@ -31,26 +30,28 @@ while (true)
         case 3, p = reshape(obj.pressure,3,num_elem); % Q2P-1
     end
     visc = obj.particles.update_visceff(p);
-  
-    % build new stiffness matrix and apply constraints
+    
+    % update Stokes system
     obj.update_A_matrix(visc);
-    obj.A = obj.CV' * obj.A * obj.CV;
     
     % solve the system
-    v_prev = v;    
+    v_prev = v;
     obj.solve_linear();
     v = obj.velocity;
     
     % check convergence
     res = norm(v(:) - v_prev(:), norm_p) / norm(v(:), norm_p);
     j = j + 1;
-    if (verbose > 0)
-        fprintf('Non-linear iteration %3d, res %9.7f\n', j, res);
-    end
+    m = sprintf('Non-linear iteration %3d, res: %9.7f', j, res);
+    verbose.disp(m, 2);
     if (res < tolerance || j >= maxiter)
         break;
     end
     
 end
+
+t = toc(t);
+if (res < tolerance), c = 'converged'; else c = 'didn''t converge'; end;
+verbose.disp(['Non-linear iterations - ', c, ' ... ', num2str(t)], 2);
 
 end

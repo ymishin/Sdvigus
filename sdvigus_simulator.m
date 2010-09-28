@@ -1,14 +1,24 @@
-function sdvigus_simulator(model_dir, vrb, ncpu, do_exit)
+function sdvigus_simulator(model_dir, vrbl, ncpu, do_exit)
 % Sdvigus simulator.
 %
 % $Id$
 
+% sdvigus home
+shome = regexprep(mfilename('fullpath'), mfilename, '');
+
+% code
+addpath([shome, 'src']);
+
+% version
+global version;
+version = csvread([shome, '.ver']);
+
 % verbosity level
 global verbose;
-if (~exist('vrb','var') || isempty(vrb))
-    vrb = 0;
+if (~exist('vrbl','var') || isempty(vrbl))
+    vrbl = 0;
 end
-verbose = vrb;
+verbose = Verbose(vrbl);
 
 % parallel execution ?
 if (~exist('ncpu','var') || isempty(ncpu))
@@ -19,9 +29,6 @@ end
 if (~exist('do_exit','var') || isempty(do_exit))
     do_exit = false;
 end
-
-% code
-addpath([pwd, filesep, 'src']);
 
 % save current dir and change to model dir
 old_dir = pwd;
@@ -42,6 +49,15 @@ if (ncpu > 0)
     end
 end
 
+% set maximum number of computational threads
+if (ncpu > 0)
+    num_threads = ncpu;
+else
+    num_threads = 1;
+end
+maxNumCompThreads(num_threads);
+fprintf('maxNumCompThreads: %d\n', num_threads);
+
 % name of the model
 if (ispc)
     dlm = '\\';
@@ -52,7 +68,9 @@ model_name = textscan(pwd, '%s', 'Delimiter', dlm);
 model_name = model_name{1}{end};
 
 % run simulation
-simulator(model_name);
+model = Model(model_name);
+model.run();
+delete(model);
 
 % go back
 cd(old_dir);

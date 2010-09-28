@@ -120,8 +120,6 @@ obj.data = data;
 clear data;
 
 t = toc(t);
-if (verbose > 1)
-    fprintf('Time integration of particles properties ... %f\n', t);
-end
+verbose.disp(['Particles time integration ... ', num2str(t)], 2);
 
 end

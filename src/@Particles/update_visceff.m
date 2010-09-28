@@ -135,9 +135,9 @@ parfor iel = 1:num_elem
         cohesion = cohesion1(type) + cohesion3(type) .* coef;
         phi = phi1(type) + phi3(type) .* coef;
         % yield stress (Drucker-Prager criterion)
-        stress_yield = cos(phi) .* cohesion + ...
-                       sin(phi) .* (Np * pressure(:,iel));
-        %stress_yield = max(cos(phi) .* cohesion, stress_yield);
+        stress_yield = cosd(phi) .* cohesion + ...
+                       sind(phi) .* (Np * pressure(:,iel));
+        %stress_yield = max(cosd(phi) .* cohesion, stress_yield);
         % new effective viscoties
         new_visc = min(new_visc, 0.5 * stress_yield ./ edata(:,israte));
     end
@@ -159,8 +159,6 @@ obj.data = data;
 clear data;
 
 t = toc(t);
-if (verbose > 1)
-    fprintf('Update effective viscosities ... %f\n', t);
-end
+verbose.disp(['Viscosities update ... ', num2str(t)], 2);
 
 end

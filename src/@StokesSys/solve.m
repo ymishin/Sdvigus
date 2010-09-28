@@ -1,7 +1,21 @@
 function solve(obj)
 % Build and solve Stokes system of equations.
-% 
+%
 % $Id$
+
+% solve Stokes system ?
+if (~obj.stokes_enabled)
+    % set velocities and pressures to all zeros
+    num_elem = size(obj.grids.stokes.elem2node, 2);
+    num_node = size(obj.grids.stokes.node_coord, 2);
+    obj.velocity = zeros(num_node, 2);
+    switch obj.elem_type
+        case 1, obj.pressure = zeros(num_elem, 1);   % Q1P0
+        case 2, obj.pressure = zeros(num_node, 1);   % Q1Q1
+        case 3, obj.pressure = zeros(3*num_elem, 1); % Q2P-1
+    end
+    return;
+end
 
 % build bc vectors
 obj.build_bc();
@@ -17,7 +31,7 @@ if (obj.grids.stokes.jmax > 1)
     obj.build_constraint_matrices();
 end
 
-% solve the system 
+% solve the system
 if (obj.linear_flag)
     obj.solve_linear();
 else

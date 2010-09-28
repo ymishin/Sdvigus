@@ -1,5 +1,5 @@
 function update_A_matrix(obj, elem_visc)
-% Update matrix A for Stokes system.
+% Build new matrix A for Stokes system and apply constraints.
 %
 % $Id$
 
@@ -57,14 +57,19 @@ for iel = 1:num_elem
     
 end
 
-% create matrix A from vectors
-A = sparse(A_i(:), A_j(:), A_s(:), num_veq, num_veq); % lower triangular
-obj.A = A + tril(A,-1)';
+% use sparse2 if available
+if (exist('sparse2','file'))
+    sparsef = @sparse2;
+else
+    sparsef = @sparse;
+end
+
+% create matrix A from vectors and apply constraints
+A = sparsef(A_i(:), A_j(:), A_s(:), num_veq, num_veq); % lower triangular
+obj.A = obj.CV' * (A + tril(A,-1)') * obj.CV;
 clear A A_i A_j A_s;
 
 t = toc(t);
-if (verbose > 1)
-    fprintf('Update matrix A for Stokes system ... %f\n', t);
-end
+verbose.disp(['Matrix A update ... ', num2str(t)], 2);
 
 end

@@ -4,7 +4,9 @@ function solve_linear_coupled(obj)
 % $Id$
 
 global verbose;
-if (verbose > 2), spparms('spumoni', 1); end;
+spval = 0;
+if (verbose.level > 2), spval = 1; end;
+if (verbose.level > 3), spval = 2; end;
 t = tic;
 
 % all required data
@@ -50,8 +52,10 @@ RHSp = - Q(bc.eq,:)' * bc.val;
 A = [A(free_veq,free_veq)   Q(free_veq,free_peq); ...
      Q(free_veq,free_peq)' -C(free_peq,free_peq)];
 
-% solve it
+% solve it (MA57 is expected)
+spparms('spumoni', spval);
 x = A \ [RHSv(free_veq); RHSp(free_peq)];
+spparms('spumoni', 0);
 
 % extract velocity and pressure
 v(free_veq) = x(1:num_free_veq);
@@ -67,7 +71,6 @@ obj.velocity(:,2) = v(2:2:end);
 obj.pressure = p;
 
 t = toc(t);
-if (verbose > 1), fprintf('Solve Stokes system ... %f\n', t); end;
-if (verbose > 2), spparms('spumoni', 1); end;
+verbose.disp(['Stokes solver ... ', num2str(t)], 2);
 
 end

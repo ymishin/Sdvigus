@@ -11,15 +11,17 @@ classdef Model < handle
         
         % time stepping parameters
         nstep;
+        nstep1;
+        max_nstep;
         current_time;
         dt;
         total_time;
         dt_default;
         courant;
         
-        % output flags
+        % output parameters
         output_enabled;
-        prec_output;
+        output_freq;
         
         % main entities which constitute model
         domain;

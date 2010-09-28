@@ -185,16 +185,23 @@ for iel = 1:num_elem
     
 end
 
+% use sparse2 if available
+if (exist('sparse2','file'))
+    sparsef = @sparse2;
+else
+    sparsef = @sparse;
+end
+
 % create matrices from vectors
 % A
-A = sparse(A_i(:), A_j(:), A_s(:), num_veq, num_veq); % lower triangular
+A = sparsef(A_i(:), A_j(:), A_s(:), num_veq, num_veq); % lower triangular
 obj.A = A + tril(A,-1)';
 clear A A_i A_j A_s;
 % Q
-obj.Q = sparse(Q_i(:), Q_j(:), Q_s(:), num_veq, num_peq);
+obj.Q = sparsef(Q_i(:), Q_j(:), Q_s(:), num_veq, num_peq);
 clear Q_i Q_j Q_s;
 % invM and C
-MC = sparse(MC_i(:), MC_j(:), MC_s(:), num_peq, num_peq);
+MC = sparsef(MC_i(:), MC_j(:), MC_s(:), num_peq, num_peq);
 if (elem_type == 2)
     % matrix C (Q1Q1)
     obj.C = MC;
@@ -208,8 +215,6 @@ obj.RHS = RHS;
 clear RHS;
 
 t = toc(t);
-if (verbose > 1)
-    fprintf('Construct system matrices for Stokes system ... %f\n', t);
-end
+verbose.disp(['System matrices construction ... ', num2str(t)], 2);
 
 end

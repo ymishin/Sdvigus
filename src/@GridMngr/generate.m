@@ -3,6 +3,9 @@ function generate(obj)
 %
 % $Id$
 
+global verbose;
+t = tic;
+
 % check if domain size was changed
 if (any(obj.stokes.dsize ~= obj.domain.size))
     obj.stokes.dsize = obj.domain.size;
@@ -14,12 +17,17 @@ if (obj.stokes_update)
     if (obj.stokes.jmax > 1)
         % multilevel grid
         obj.stokes.generate_multilevel();
-        obj.stokes_update = false;
     else
         % equidistant grid
         obj.stokes.generate_simple();
-        obj.stokes_update = false;
     end
+    obj.stokes_update = false;
 end
+
+num_elem = size(obj.stokes.elem2node, 2);
+verbose.disp(['Number of elements: ', num2str(num_elem)], 1);
+
+t = toc(t);
+verbose.disp(['Grid generation ... ', num2str(t)], 2);
 
 end

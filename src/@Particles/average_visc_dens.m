@@ -41,8 +41,6 @@ end
 clear data;
 
 t = toc(t);
-if (verbose > 1)
-    fprintf('Compute average properties ... %f\n', t);
-end
+verbose.disp(['Properties averaging ... ', num2str(t)], 2);
 
 end

@@ -8,6 +8,9 @@ obj.domain = domain;
 obj.grids = grids;
 obj.particles = particles;
 
+% solve Stokes system ?
+obj.stokes_enabled = logical(hdf5read(cf, '/solvers/stokes_enabled'));
+
 % element type
 obj.elem_type = hdf5read(df, '/grids/elem_type');
 

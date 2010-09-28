@@ -3,6 +3,9 @@ function run(obj)
 %
 % $Id$
 
+global version;
+fprintf('\n***** SDVIGUS v%4.2f - POST-PROCESSOR *****\n\n', version);
+
 % read description file
 obj.read_desc();
 
@@ -14,8 +17,7 @@ obj.outdir = 'postproc_output';
 for nfile = obj.first:obj.step:obj.last
     
     obj.nfile = nfile;
-    fprintf('Processing %s ...\n', ...
-        [obj.model_name, '_', num2str(obj.nfile, '%05d'), '.h5']);
+    fprintf('Processing %s, step %5d\n', obj.model_name, obj.nfile);
     
     % read output files from simulation
     obj.read_data();
@@ -56,5 +58,7 @@ for nfile = obj.first:obj.step:obj.last
     end
     
 end
+
+fprintf('\n');
 
 end

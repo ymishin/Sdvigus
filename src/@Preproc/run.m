@@ -3,6 +3,9 @@ function run(obj)
 %
 % $Id$
 
+global version;
+fprintf('\n***** SDVIGUS v%4.2f - PRE-PROCESSOR *****\n\n', version);
+
 % run model description script
 run(obj.desc);
 
@@ -78,7 +81,7 @@ if (create_init)
     if (exist('init_fname', 'var'))
         fname = init_fname;
     else
-        fname = [obj.model_name, '_00000', '.h5'];
+        fname = [obj.model_name, '_init', '.h5'];
     end
     w = 'writemode'; a = 'append';
     hdf5write(fname, '/time/dt', 0);
@@ -101,9 +104,14 @@ if (create_init)
             hdf5write(fname, '/particles/strain_plast', z, w, a);
         end
     end
+    % attach version number
+    attr = struct('Name', 'version', 'AttachedTo', '/', 'AttachType', 'group');
+    hdf5write(fname, attr, version, w, a);
     
     % number of the model file to start from
-    csvwrite('start_from', 0);
+    csvwrite('start_from', -1);
+    
+    fprintf('Initial data file has been created\n');
     
 end
 
@@ -137,10 +145,15 @@ if (create_mtrl)
     hdf5write(fname, '/visc', mtrl_visc, w, a);
     hdf5write(fname, '/dens0', dens0, w, a);
     hdf5write(fname, '/visc0', visc0, w, a);
-    hdf5write(fname, '/powerlaw/n', mtrl_n, w, a);    
+    hdf5write(fname, '/powerlaw/n', mtrl_n, w, a);
     hdf5write(fname, '/yielding/cohesion', mtrl_cohesion, w, a);
     hdf5write(fname, '/yielding/phi', mtrl_phi, w, a);
     hdf5write(fname, '/yielding/weakhard', mtrl_weakhard, w, a);
+    % attach version number
+    attr = struct('Name', 'version', 'AttachedTo', '/', 'AttachType', 'group');
+    hdf5write(fname, attr, version, w, a);
+    
+    fprintf('Material library has been created\n');
     
 end
 
@@ -180,6 +193,11 @@ if (create_ctrl)
     if (~isempty(bvy_top))
         bv_top(2) = bvy_top; bv_top_free(2) = 0;
     end
+   
+    % Voronoi
+    if (isempty(fixed_types)), fixed_types = -1; end
+    if (isempty(min_area)), min_area = -1; end
+    if (isempty(max_area)), max_area = -1; end
     
     % boundary exits
     if (~exist('left_exit','var') || isempty(left_exit))
@@ -190,21 +208,34 @@ if (create_ctrl)
     end
     
     % time step
-    if (isempty(dt_default)), dt_default = -1; end
-    if (isempty(courant)), courant = -1; end
-    
-    % Voronoi
-    if (isempty(fixed_types)), fixed_types = -1; end
-    if (isempty(min_area)), min_area = -1; end
-    if (isempty(max_area)), max_area = -1; end
+    if (~exist('dt_default','var') || isempty(dt_default))
+        dt_default = -1;
+    end
+    if (~exist('courant','var') || isempty(courant))
+        courant = -1;
+    end
+    if (~exist('max_nstep','var') || isempty(max_nstep))
+        max_nstep = Inf;
+    end
     
     % adaptive grid refinement
     if (jmax == 1), adapt_grid = false; end
     
     % criteria for adaptive grid refinement
-    if (isempty(criter_viscosity)), criter_viscosity = 0; end
-    if (isempty(criter_velocity_x)), criter_velocity_x = 0; end
-    if (isempty(criter_velocity_y)), criter_velocity_y = 0; end
+    if (~exist('criter_viscosity','var') || isempty(criter_viscosity))
+        criter_viscosity = 0;
+    end
+    if (~exist('criter_velocity_x','var') || isempty(criter_velocity_x))
+        criter_velocity_x = 0;
+    end
+    if (~exist('criter_velocity_y','var') || isempty(criter_velocity_y))
+        criter_velocity_y = 0;
+    end
+    
+    % stokes solver
+    if (~exist('stokes_enabled','var') || isempty(stokes_enabled))
+        stokes_enabled = true;
+    end
     
     % save control file
     if (exist('ctrl_fname', 'var'))
@@ -235,6 +266,7 @@ if (create_ctrl)
     hdf5write(fname, '/grids/criter_viscosity', criter_viscosity, w, a);
     hdf5write(fname, '/grids/criter_velocity_x', criter_velocity_x, w, a);
     hdf5write(fname, '/grids/criter_velocity_y', criter_velocity_y, w, a);
+    hdf5write(fname, '/solvers/stokes_enabled', uint8(stokes_enabled), w, a);
     hdf5write(fname, '/solvers/PH/k', PH_k, w, a);
     hdf5write(fname, '/solvers/PH/maxdiv', PH_maxdiv, w, a);
     hdf5write(fname, '/solvers/PH/maxiter', PH_maxiter, w, a);
@@ -243,12 +275,20 @@ if (create_ctrl)
     hdf5write(fname, '/solvers/nonlinear/maxiter', nonlinear_maxiter, w, a);
     hdf5write(fname, '/rheologies/yielding', uint8(yielding_rheol), w, a);
     hdf5write(fname, '/rheologies/powerlaw', uint8(powerlaw_rheol), w, a);
+    hdf5write(fname, '/time/max_nstep', max_nstep, w, a);
     hdf5write(fname, '/time/total_time', total_time, w, a);
     hdf5write(fname, '/time/dt_default', dt_default, w, a);
     hdf5write(fname, '/time/courant', courant, w, a);
     hdf5write(fname, '/output/enabled', uint8(output_enabled), w, a);
-    hdf5write(fname, '/output/prec', uint8(prec_output), w, a);
+    hdf5write(fname, '/output/freq', output_freq, w, a);
+    % attach version number
+    attr = struct('Name', 'version', 'AttachedTo', '/', 'AttachType', 'group');
+    hdf5write(fname, attr, version, w, a);
+    
+    fprintf('Control file has been created\n');
     
 end
+
+fprintf('\n');
 
 end

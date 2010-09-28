@@ -166,5 +166,5 @@ nonlinear_maxiter = 30;
 
 % perform output ?
 output_enabled = true;
-% when to perform output - before advection (true), or after (false)
-prec_output = false;
+% how often to perform output (number of iterations) ?
+output_freq = 1;

@@ -103,14 +103,14 @@ part_noise = 0.0;
 % 4. if there are no constraints the zone will be equal to the whole domain
 % 5. in case of zones overlap the following zone in the list has the priority
 mtrl_zones = { ...
-    { 1, @(x,y)(0.7 <= y < 0.8) }, ...
-    { 2, @(x,y)(0.6 <= y < 0.7) }, ...
-    { 1, @(x,y)(0.5 <= y < 0.6) }, ...
-    { 2, @(x,y)(0.4 <= y < 0.5) }, ...
-    { 1, @(x,y)(0.3 <= y < 0.4) }, ...
-    { 2, @(x,y)(0.2 <= y < 0.3) }, ...
-    { 1, @(x,y)(0.1 <= y < 0.2) }, ...
-    { 2, @(x,y)(0.0 <= y < 0.1) }, ...
+    { 1, @(x,y)(y < 0.80) }, { 2, @(x,y)(y < 0.75) }, ...
+    { 1, @(x,y)(y < 0.70) }, { 2, @(x,y)(y < 0.65) }, ...
+    { 1, @(x,y)(y < 0.60) }, { 2, @(x,y)(y < 0.55) }, ...
+    { 1, @(x,y)(y < 0.50) }, { 2, @(x,y)(y < 0.45) }, ...
+    { 1, @(x,y)(y < 0.40) }, { 2, @(x,y)(y < 0.35) }, ...
+    { 1, @(x,y)(y < 0.30) }, { 2, @(x,y)(y < 0.25) }, ...
+    { 1, @(x,y)(y < 0.20) }, { 2, @(x,y)(y < 0.15) }, ...
+    { 1, @(x,y)(y < 0.10) }, { 2, @(x,y)(y < 0.05) }, ...
     { 3, @(x,y)(x > -0.02), @(x,y)(x < 0.02), @(x,y)(y < 0.04) } };
 
 % material library
@@ -127,22 +127,19 @@ mtrl_zones = { ...
 m = 1;
 mtrl_dens(m)          = 1.0;
 mtrl_visc(m)          = 100.0;
-mtrl_n(m)             = 1.0;
 mtrl_cohesion(1:2,m)  = [4.0 1.0];
-mtrl_phi(1:2,m)       = atan(0.0);
-mtrl_weakhard(1:2,m)  = [0.0 0.05];
+mtrl_phi(1:2,m)       = atand(0.6);
+mtrl_weakhard(1:2,m)  = [0.0 0.1];
 m = 2;
-mtrl_dens(m)          = 1.0;
-mtrl_visc(m)          = 100.0;
-mtrl_n(m)             = 1.0;
-mtrl_cohesion(1:2,m)  = [4.0 1.0];
-mtrl_phi(1:2,m)       = atan(0.0);
-mtrl_weakhard(1:2,m)  = [0.0 0.05];
+mtrl_dens(m)          = mtrl_dens(1);
+mtrl_visc(m)          = mtrl_visc(1);
+mtrl_cohesion(1:2,m)  = mtrl_cohesion(1:2,1);
+mtrl_phi(1:2,m)       = mtrl_phi(1:2,1);
+mtrl_weakhard(1:2,m)  = mtrl_weakhard(1:2,1);
 % material 3 (weak inclusion)
 m = 3;
 mtrl_dens(m)          = 1.0;
 mtrl_visc(m)          = 1.0;
-mtrl_n(m)             = 1.0;
 mtrl_cohesion(1:2,m)  = Inf;
 mtrl_phi(1:2,m)       = 0.0;
 mtrl_weakhard(1:2,m)  = 0.0;
@@ -184,9 +181,9 @@ PH_maxiter = 30;
 % 'nonlinear_maxiter' is maximum number of nonlinear iterations to perform
 nonlinear_norm = 1;
 nonlinear_tol = 1.0e-3;
-nonlinear_maxiter = 30;
+nonlinear_maxiter = 50;
 
 % perform output ?
 output_enabled = true;
-% when to perform output - before advection (true), or after (false)
-prec_output = false;
+% how often to perform output (number of iterations) ?
+output_freq = 1;

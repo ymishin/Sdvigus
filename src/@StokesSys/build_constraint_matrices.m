@@ -248,11 +248,18 @@ switch elem_type
     
 end
 
+% use sparse2 if available
+if (exist('sparse2','file'))
+    sparsef = @sparse2;
+else
+    sparsef = @sparse;
+end
+
 % create velocity constraint matrix from vectors
 CV_i(k:end) = [];
 CV_j(k:end) = [];
 CV_s(k:end) = [];
-CV = speye(num_veq) + sparse(CV_i(:), CV_j(:), CV_s(:), num_veq, num_veq);
+CV = speye(num_veq) + sparsef(CV_i(:), CV_j(:), CV_s(:), num_veq, num_veq);
 obj.CV = CV;
 
 % impose constraint on velocities
@@ -265,7 +272,7 @@ if (elem_type == 2)
     CP_i(l:end) = [];
     CP_j(l:end) = [];
     CP_s(l:end) = [];
-    CP = speye(num_peq) + sparse(CP_i(:), CP_j(:), CP_s(:), num_peq, num_peq);
+    CP = speye(num_peq) + sparsef(CP_i(:), CP_j(:), CP_s(:), num_peq, num_peq);
     obj.CP = CP;
 
     % impose constraint on pressures
@@ -274,8 +281,6 @@ if (elem_type == 2)
 end
 
 t = toc(t);
-if (verbose > 1)
-    fprintf('Construct constraint matrices for Stokes system ... %f\n', t);
-end
+verbose.disp(['Constraint matrices construction ... ', num2str(t)], 2);
 
 end

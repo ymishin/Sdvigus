@@ -3,8 +3,8 @@ function reshape_data(obj, mode)
 %
 % $Id$
 
-global verbose;
-t = tic;
+% global verbose;
+% t = tic;
 
 switch mode
     
@@ -45,9 +45,7 @@ switch mode
         
 end
 
-t = toc(t);
-if (verbose > 2)
-    fprintf('Change state of the data to \''%s\'' ... %f\n', mode, t);
-end
+% t = toc(t); verbose.disp(['Change state of the data to ''', ...
+%                          mode, ''' ... ', num2str(t)], 2);
 
 end

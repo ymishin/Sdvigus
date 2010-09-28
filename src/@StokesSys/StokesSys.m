@@ -6,6 +6,9 @@ classdef StokesSys < handle
     
     properties (SetAccess = protected)
         
+        % solve the system ?
+        stokes_enabled;
+        
         % velocity and pressure
         velocity;
         pressure;

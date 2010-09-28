@@ -1,14 +1,24 @@
-function sdvigus_postproc(model_dir, vrb, ncpu, do_exit)
+function sdvigus_postproc(model_dir, vrbl, ncpu, do_exit)
 % Sdvigus postprocessor.
 %
 % $Id$
 
+% sdvigus home
+shome = regexprep(mfilename('fullpath'), mfilename, '');
+
+% code
+addpath([shome, 'src']);
+
+% version
+global version;
+version = csvread([shome, '.ver']);
+
 % verbosity level
 global verbose;
-if (~exist('vrb','var') || isempty(vrb))
-    vrb = 0;
+if (~exist('vrbl','var') || isempty(vrbl))
+    vrbl = 0;
 end
-verbose = vrb;
+verbose = Verbose(vrbl);
 
 % parallel execution ?
 if (~exist('ncpu','var') || isempty(ncpu))
@@ -22,9 +32,6 @@ end
 
 % description script for postprocessing
 desc = 'postproc_desc';
-
-% code
-addpath([pwd, filesep, 'src']);
 
 % save current dir and change to model dir
 old_dir = pwd;
@@ -55,7 +62,9 @@ model_name = textscan(pwd, '%s', 'Delimiter', dlm);
 model_name = model_name{1}{end};
 
 % run postprocessor
-postproc(model_name, desc);
+postproc = Postproc(model_name, desc);
+postproc.run();
+delete(postproc);
 
 % go back
 cd(old_dir);

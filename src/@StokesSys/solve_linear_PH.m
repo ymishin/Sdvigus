@@ -4,7 +4,9 @@ function solve_linear_PH(obj)
 % $Id$
 
 global verbose;
-if (verbose > 2), spparms('spumoni', 1); end;
+spval = 0;
+if (verbose.level > 2), spval = 1; end;
+if (verbose.level > 3), spval = 2; end;
 t = tic;
 
 % parameters
@@ -54,7 +56,9 @@ RHSv = RHSv(perm);
 clear perm;
 
 % perform Cholesky factorization
+spparms('spumoni', spval);
 A = chol(A, 'lower');
+spparms('spumoni', 0);
 
 % Powell-Hestenes loop
 j = 0;
@@ -68,11 +72,8 @@ while (true)
     % update pressure
     p = p + k * div;
     % check convergence
-    res = norm(div(:),Inf);
+    res = norm(div(:), Inf);
     j = j + 1;
-    if (verbose > 1)
-        fprintf('Powell-Hestenes iteration %3d, res %18.16f\n', j, res);
-    end
     if (res < maxdiv || j >= maxiter)
         break;
     end
@@ -84,7 +85,7 @@ obj.velocity(:,2) = v(2:2:end);
 obj.pressure = p;
 
 t = toc(t);
-if (verbose > 1), fprintf('Solve Stokes system ... %f\n', t); end;
-if (verbose > 2), spparms('spumoni', 1); end;
+m = sprintf('Stokes solver (PH: %d) ... %f', j, t);
+verbose.disp(m, 2);
 
 end

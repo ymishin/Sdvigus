@@ -4,7 +4,11 @@ function read_data(obj)
 % $Id$
 
 % file names
-df = [obj.model_name, '_', num2str(obj.nfile, '%05d'), '.h5'];
+if (obj.nfile > -1)
+    df = [obj.model_name, '_', num2str(obj.nfile, '%05d'), '.h5'];
+else
+    df = [obj.model_name, '_init', '.h5'];
+end
 mf = [obj.model_name, '_mtrl', '.h5'];
 cf = [obj.model_name, '_ctrl', '.h5'];
 
