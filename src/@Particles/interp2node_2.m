@@ -32,121 +32,120 @@ mask1 = mask(2:2:end-1,1:2:end);
 coord_x1 = coord_x(2:2:end-1,1:2:end);
 coord_y1 = coord_y(2:2:end-1,1:2:end);
 [num_node_y, num_node_x] = size(mask1);
-num_node = num_node_y * num_node_x;
-node_data1 = zeros(num_node, 1);
+node_data1 = zeros(num_node_y, num_node_x);
 % loop over nodes
-parfor in = 1:num_node
-    
-    % check if the node is in the mask
-    if (~mask1(in))
-        continue;
+for iny = 1:num_node_y
+    for inx = 1:num_node_x
+        
+        % check if the node is in the mask
+        if (~mask1(iny,inx))
+            continue;
+        end
+        
+        % find elements adjacent to the node
+        r = []; l = [];
+        if (inx < num_node_x)
+            % right
+            r = (inx - 1) * num_elem_y + iny;
+        end
+        if (inx > 1)
+            % left
+            l = (inx - 2) * num_elem_y + iny;
+        end
+        
+        % particles data from adjacent elements
+        part_data_nearest = vertcat(data{[r l]});
+        
+        % are there any particles ?
+        if (isempty(part_data_nearest))
+            continue;
+        end
+        
+        % find particle nearest to the node and store its data
+        [ignore, ip] = min((part_data_nearest(:,1) - coord_x1(iny,inx)).^2 + ...
+                           (part_data_nearest(:,2) - coord_y1(iny,inx)).^2);
+        node_data1(iny,inx) = part_data_nearest(ip,iprop);
+        
     end
-    
-    % find elements adjacent to the node
-    inx = ceil(in / num_node_y);
-    iny = in - (inx - 1) * num_node_y;
-    r = []; l = [];
-    if (inx < num_node_x)
-        % right
-        r = (inx - 1) * num_elem_y + iny;
-    end
-    if (inx > 1)
-        % left
-        l = (inx - 2) * num_elem_y + iny;
-    end
-    
-    % particles data from adjacent elements
-    part_data_nearest = vertcat(data{[r l]});
-    
-    % are there any particles ?
-    if (isempty(part_data_nearest))
-        continue;
-    end
-    
-    % find particle nearest to the node and store its data
-    [ignore, ip] = min((part_data_nearest(:,1) - coord_x1(in)).^2 + ...
-                       (part_data_nearest(:,2) - coord_y1(in)).^2);
-    node_data1(in) = part_data_nearest(ip,iprop);
-    
 end
-% reshape
-node_data(2:2:end-1,1:2:end) = reshape(node_data1, num_node_y, num_node_x);
+% store
+node_data(2:2:end-1,1:2:end) = node_data1;
 
 % ***** interpolate to nodes at horizontal edges *****
 mask1 = mask(1:2:end,2:2:end-1);
 coord_x1 = coord_x(1:2:end,2:2:end-1);
 coord_y1 = coord_y(1:2:end,2:2:end-1);
 [num_node_y, num_node_x] = size(mask1);
-num_node = num_node_y * num_node_x;
-node_data1 = zeros(num_node, 1);
+node_data1 = zeros(num_node_y, num_node_x);
 % loop over nodes
-parfor in = 1:num_node
-    
-    % check if the node is in the mask
-    if (~mask1(in))
-        continue;
+for iny = 1:num_node_y
+    for inx = 1:num_node_x
+        
+        % check if the node is in the mask
+        if (~mask1(iny,inx))
+            continue;
+        end
+        
+        % find elements adjacent to the node
+        t = []; b = [];
+        if (iny < num_node_y)
+            % top
+            t = (inx - 1) * num_elem_y + iny;
+        end
+        if (iny > 1)
+            % bottom
+            b = (inx - 1) * num_elem_y + iny - 1;
+        end
+        
+        % particles data from adjacent elements
+        part_data_nearest = vertcat(data{[t b]});
+        
+        % are there any particles ?
+        if (isempty(part_data_nearest))
+            continue;
+        end
+        
+        % find particle nearest to the node and store its data
+        [ignore, ip] = min((part_data_nearest(:,1) - coord_x1(iny,inx)).^2 + ...
+                           (part_data_nearest(:,2) - coord_y1(iny,inx)).^2);
+        node_data1(iny,inx) = part_data_nearest(ip,iprop);
+        
     end
-    
-    % find elements adjacent to the node
-    inx = ceil(in / num_node_y);
-    iny = in - (inx - 1) * num_node_y;
-    t = []; b = [];
-    if (iny < num_node_y)
-        % top
-        t = (inx - 1) * num_elem_y + iny;
-    end
-    if (iny > 1)
-        % bottom
-        b = (inx - 1) * num_elem_y + iny - 1;
-    end
-    
-    % particles data from adjacent elements
-    part_data_nearest = vertcat(data{[t b]});
-    
-    % are there any particles ?
-    if (isempty(part_data_nearest))
-        continue;
-    end
-    
-    % find particle nearest to the node and store its data
-    [ignore, ip] = min((part_data_nearest(:,1) - coord_x1(in)).^2 + ...
-                       (part_data_nearest(:,2) - coord_y1(in)).^2);
-    node_data1(in) = part_data_nearest(ip,iprop);
-    
 end
-% reshape
-node_data(1:2:end,2:2:end-1) = reshape(node_data1, num_node_y, num_node_x);
+% store
+node_data(1:2:end,2:2:end-1) = node_data1;
 
 % ***** interpolate to nodes at centers *****
 mask1 = mask(2:2:end-1,2:2:end-1);
 coord_x1 = coord_x(2:2:end-1,2:2:end-1);
 coord_y1 = coord_y(2:2:end-1,2:2:end-1);
 [num_node_y, num_node_x] = size(mask1);
-num_node = num_node_y * num_node_x;
-node_data1 = zeros(num_node, 1);
+node_data1 = zeros(num_node_y, num_node_x);
 % loop over nodes
-parfor in = 1:num_node
-    
-    % check if the node is in the mask
-    if (~mask1(in))
-        continue;
+for iny = 1:num_node_y
+    for inx = 1:num_node_x
+        
+        % check if the node is in the mask
+        if (~mask1(iny,inx))
+            continue;
+        end
+        
+        % particles data
+        part_data_nearest = data{(inx - 1) * num_elem_y + iny};
+        
+        % are there any particles ?
+        if (isempty(part_data_nearest))
+            continue;
+        end
+        
+        % find particle nearest to the node and store its data
+        [ignore, ip] = min((part_data_nearest(:,1) - coord_x1(iny,inx)).^2 + ...
+                           (part_data_nearest(:,2) - coord_y1(iny,inx)).^2);
+        node_data1(iny,inx) = part_data_nearest(ip,iprop);
+        
     end
-    
-    % particles data
-    part_data_nearest = data{in};
-    
-    % are there any particles ?
-    if (isempty(part_data_nearest))
-        continue;
-    end
-    
-    % find particle nearest to the node and store its data
-    [ignore, ip] = min((part_data_nearest(:,1) - coord_x1(in)).^2 + ...
-                       (part_data_nearest(:,2) - coord_y1(in)).^2);
-    node_data1(in) = part_data_nearest(ip,iprop);
-    
 end
-% reshape
-node_data(2:2:end-1,2:2:end-1) = reshape(node_data1, num_node_y, num_node_x);
+% store
+node_data(2:2:end-1,2:2:end-1) = node_data1;
 
 end

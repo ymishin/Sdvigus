@@ -71,9 +71,10 @@ parfor iel = 1:num_elem
     
     % particles' data in current element
     edata = data{iel};
+    num_part = size(edata,1);
     
     % empty element ?
-    if (isempty(edata))
+    if (~num_part)
         elem_visc(iel) = visc0;
         continue;
     end
@@ -92,27 +93,25 @@ parfor iel = 1:num_elem
     
     % ********** COMPUTE STRAIN RATE **********
     
-    % inv(J) for current element
-    invJ_elem = (1/sf(iel)) * invJ;
     % velocities
     ev = zeros(2 * num_vnode_el, 1);
     ev(1:2:end-1) = vx(nodes);
     ev(2:2:end) = vy(nodes);
-    % compute 2nd invariant of strain rate for each particle
-    B = zeros(3, 2 * num_vnode_el);
-    for i = 1:size(edata,1)
-        % derivatives wrt global coordinates
-        dNvi = invJ_elem * dNv(2*i-1:2*i,:);
-        % strain rate at particle's position
-        B(1,1:2:end-1) = dNvi(1,:);
-        B(2,2:2:end)   = dNvi(2,:);
-        B(3,1:2:end-1) = dNvi(2,:);
-        B(3,2:2:end)   = dNvi(1,:);
-        strain = B * ev;
-        % 2nd invariant of strain rate
-        edata(i,israte) = sqrt(0.5 * (strain(1)^2 + ...
-            strain(2)^2) + (0.5 * strain(3))^2);
+    % derivatives wrt global coordinates
+    invJ_elem = (1/sf(iel)) * invJ;
+    for i = 1:num_part
+        dNv(2*i-1:2*i,:) = invJ_elem * dNv(2*i-1:2*i,:);
     end
+    % strain rates at particles' positions
+    B = zeros(3 * num_part, 2 * num_vnode_el);
+    B(1:3:end-2,1:2:end-1) = dNv(1:2:end-1,:);
+    B(2:3:end-1,2:2:end) = dNv(2:2:end,:);
+    B(3:3:end,1:2:end-1) = dNv(2:2:end,:);
+    B(3:3:end,2:2:end) = dNv(1:2:end-1,:);
+    strain = reshape(B * ev, 3, num_part)';
+    % 2nd invariant of strain rate
+    edata(:,israte) = sqrt(0.5 * (strain(:,1).^2 + ...
+        strain(:,2).^2) + (0.5 * strain(:,3)).^2);
     
     % ********** COMPUTE NEW EFFECTIVE VISCOSITIES **********
     
