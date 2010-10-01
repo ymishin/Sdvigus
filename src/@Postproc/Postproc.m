@@ -13,7 +13,7 @@ classdef Postproc < dynamicprops
         desc;
         
         % time stepping parameters
-        nfile;
+        nstep;
         current_time;
         
         % folder for results
@@ -38,6 +38,9 @@ classdef Postproc < dynamicprops
         % run postprocessor
         run(obj);
         
+        % tune and save the plot
+        save_plot(obj, name, desc);
+        
         % check if property exists
         r = isprop(obj, prop);
         
@@ -46,10 +49,10 @@ classdef Postproc < dynamicprops
     methods (Access = private)
         
         % read description file
-        desc_struct = read_desc(obj, desc);
+        desc_struct = read_desc(obj);
         
         % read all data
-        read_data(obj, nfile, desc);
+        read_data(obj);
         
     end
     

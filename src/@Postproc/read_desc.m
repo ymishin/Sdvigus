@@ -8,7 +8,7 @@ run(obj.desc);
 
 % find all added variables
 vars = who;
-vars(strcmp(vars, 'obj') | strcmp(vars, 'desc')) = [];
+vars(strcmp(vars, 'obj')) = [];
 
 % add variables as properties
 for i = 1:length(vars)

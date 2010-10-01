@@ -97,6 +97,6 @@ parfor iel = 1:num_elem
     [ignore, vcells(iel,:)] = min([part_dp_dist, bpart_dp_dist], [], 2);
     
 end
-vcells = uint8(vcells);
+vcells = uint16(vcells);
 
 end

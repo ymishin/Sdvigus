@@ -14,10 +14,10 @@ obj.outdir = 'postproc_output';
 [ignore, ignore, ignore] = mkdir(obj.outdir);
 
 % loop over output steps
-for nfile = obj.first:obj.step:obj.last
+for nstep = obj.nsteps
     
-    obj.nfile = nfile;
-    fprintf('Processing %s, step %5d\n', obj.model_name, obj.nfile);
+    obj.nstep = nstep;
+    fprintf('Processing %s, step %5d\n', obj.model_name, obj.nstep);
     
     % read output files from simulation
     obj.read_data();
@@ -25,31 +25,16 @@ for nfile = obj.first:obj.step:obj.last
     % generate grid
     obj.grids.generate();
     
-    % *** plot just grid ***
-    if (obj.isprop('grid') && obj.grid.plot)
-        obj.grids.plot_grid(obj);
-    end
+    % plot just grid
+    obj.grids.plot_grid(obj);
     
-    % *** properties from grid ***
-    fields = {'velocity_x', 'velocity_y', 'pressure'};
-    for i = 1:length(fields)
-        f = fields{i};
-        if (obj.isprop(f) && obj.(f).plot)
-            obj.stokes_sys.plot_field(f, obj);
-        end
-    end
+    % plot properties from grid
+    obj.stokes_sys.plot_field(obj);
     
-    % *** properties from particles ***
-    fields = {'material', 'viscosity', 'density', ...
-              'strain_rate', 'strain_plast'};
-    for i = 1:length(fields)
-        f = fields{i};
-        if (obj.isprop(f) && obj.(f).plot)
-            obj.particles.plot_field(f, obj);
-        end
-    end
+    % plot properties from particles
+    obj.particles.plot_field(obj);
     
-    % *** execute custom functions ***
+    % execute custom functions
     if (obj.isprop('custom_funcs'))
         custom_funcs = obj.custom_funcs;
         for i = 1:length(custom_funcs)

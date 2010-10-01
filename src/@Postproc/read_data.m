@@ -4,8 +4,8 @@ function read_data(obj)
 % $Id$
 
 % file names
-if (obj.nfile > -1)
-    df = [obj.model_name, '_', num2str(obj.nfile, '%05d'), '.h5'];
+if (obj.nstep > -1)
+    df = [obj.model_name, '_', num2str(obj.nstep, '%05d'), '.h5'];
 else
     df = [obj.model_name, '_init', '.h5'];
 end

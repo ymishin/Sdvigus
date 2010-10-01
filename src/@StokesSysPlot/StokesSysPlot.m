@@ -7,7 +7,7 @@ classdef StokesSysPlot < StokesSys
     methods (Access = public)
         
         % plotting routines
-        plot_field(obj, f, postproc);
+        plot_field(obj, postproc);
         
     end
     

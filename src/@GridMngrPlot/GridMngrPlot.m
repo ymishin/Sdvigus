@@ -8,7 +8,7 @@ classdef GridMngrPlot < GridMngr
         
         % plotting routines
         plot_grid(obj, postproc);
-        plot_grid_cf(obj);
+        plot_grid_cf(obj, desc);
         
     end
     

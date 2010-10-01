@@ -20,7 +20,7 @@ classdef ParticlesPlot < Particles
         init_voronoi(obj, postproc);
         
         % plotting routines
-        plot_field(obj, f, postproc);
+        plot_field(obj, postproc);
         
     end
     
