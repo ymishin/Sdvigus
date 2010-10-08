@@ -1,7 +1,7 @@
 function tune_save_plot(obj, name, desc)
 % Tune and save the plot.
 %
-% $Id: save_plot.m 64 2010-10-01 10:13:58Z ymishin $
+% $Id$
 
 % useful variables
 model = obj.model_name;
