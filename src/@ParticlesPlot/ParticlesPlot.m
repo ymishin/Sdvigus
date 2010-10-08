@@ -24,4 +24,12 @@ classdef ParticlesPlot < Particles
         
     end
     
+    methods (Access = private)
+        
+        % plotting routines
+        plot_field_voronoi(obj, ind, desc);
+        plot_field_scatter(obj, ind, desc);
+        
+    end
+    
 end

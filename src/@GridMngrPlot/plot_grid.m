@@ -27,7 +27,7 @@ for j = 1:length(descs)
     obj.plot_grid_cf(desc);
     
     % tune and save
-    postproc.save_plot(field, desc);
+    postproc.tune_save_plot(field, desc);
     close(h);
     
 end

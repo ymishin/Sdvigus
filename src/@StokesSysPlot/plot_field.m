@@ -76,7 +76,7 @@ for i = 1:length(fields)
         end
         
         % tune and save
-        postproc.save_plot(field, desc);
+        postproc.tune_save_plot(field, desc);
         close(h);
         
     end

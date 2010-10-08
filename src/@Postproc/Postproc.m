@@ -39,7 +39,7 @@ classdef Postproc < dynamicprops
         run(obj);
         
         % tune and save the plot
-        save_plot(obj, name, desc);
+        tune_save_plot(obj, name, desc);
         
         % check if property exists
         r = isprop(obj, prop);

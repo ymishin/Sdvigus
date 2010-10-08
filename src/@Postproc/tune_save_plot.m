@@ -1,7 +1,7 @@
-function save_plot(obj, name, desc)
+function tune_save_plot(obj, name, desc)
 % Tune and save the plot.
 %
-% $Id$
+% $Id: save_plot.m 64 2010-10-01 10:13:58Z ymishin $
 
 % useful variables
 model = obj.model_name;
@@ -10,6 +10,14 @@ stime = num2str(time);
 nstep = obj.nstep;
 snstep = num2str(nstep, '%05d');
 outdir = obj.outdir;
+
+% execute custom functions
+if (isfield(desc,'custom_funcs'))
+    custom_funcs = desc.custom_funcs;
+    for i = 1:length(custom_funcs)
+        custom_funcs{i}();
+    end
+end
 
 % tune the plot
 box on;
