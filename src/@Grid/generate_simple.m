@@ -3,6 +3,9 @@ function generate_simple(obj)
 %
 % $Id$
 
+global verbose;
+t = tic;
+
 % domain dimensions
 xmin = obj.dsize(1); xmax = obj.dsize(2);
 ymin = obj.dsize(3); ymax = obj.dsize(4);
@@ -101,5 +104,8 @@ obj.node_bnd = node_bnd;
 obj.elemhl = elemhl;
 obj.elem_level = [];
 obj.elem2elemhl = [];
+
+t = toc(t);
+verbose.disp(['Equidistant grid generation ... ', num2str(t)], 2);
 
 end

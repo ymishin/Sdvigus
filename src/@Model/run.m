@@ -3,8 +3,11 @@ function run(obj)
 %
 % $Id$
 
+global verbose;
 global version;
-fprintf('\n***** SDVIGUS v%4.2f - SIMULATOR *****\n\n', version);
+
+m = sprintf('\n***** SDVIGUS v%4.2f - SIMULATOR *****\n', version);
+verbose.disp(m, 0);
 
 % is simulation restarted ?
 if (obj.nstep > -1)
@@ -14,14 +17,15 @@ if (obj.nstep > -1)
         return;
     end
     
-    fprintf('Restart from time: %f\n', obj.current_time);
+    m = sprintf('Restart from time: %f', obj.current_time);
+    verbose.disp(m, 0);
     
     % time integration
     obj.grids.generate();
     obj.particles.time_integr(obj.dt);
     obj.domain.time_integr(obj.dt);
     
-    fprintf('\n');
+    verbose.disp('', 0);
     
 end
 
@@ -30,7 +34,9 @@ while (true)
     
     obj.nstep = obj.nstep + 1;
     obj.current_time = obj.current_time + obj.dt;
-    fprintf('Step: %d, time: %f\n', obj.nstep, obj.current_time);
+    
+    m = sprintf('Step: %d, time: %f', obj.nstep, obj.current_time);
+    verbose.disp(m, 0);
     
     % update particles distribution
     obj.particles.reorder();
@@ -54,7 +60,7 @@ while (true)
     
     % continue simulation ?
     if (obj.current_time >= obj.total_time || obj.nstep >= obj.max_nstep - 1)
-        fprintf('\n');
+        verbose.disp('', 0);
         break;
     end
     
@@ -62,7 +68,7 @@ while (true)
     obj.particles.time_integr(obj.dt);
     obj.domain.time_integr(obj.dt);
     
-    fprintf('\n');
+    verbose.disp('', 0);
     
 end
 

@@ -3,9 +3,6 @@ function generate(obj)
 %
 % $Id$
 
-global verbose;
-t = tic;
-
 % check if domain size was changed
 if (any(obj.stokes.dsize ~= obj.domain.size))
     obj.stokes.dsize = obj.domain.size;
@@ -26,8 +23,5 @@ end
 
 num_elem = size(obj.stokes.elem2node, 2);
 verbose.disp(['Number of elements: ', num2str(num_elem)], 1);
-
-t = toc(t);
-verbose.disp(['Grid generation ... ', num2str(t)], 2);
 
 end
