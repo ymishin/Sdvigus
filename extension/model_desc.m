@@ -43,6 +43,7 @@ adapt_grid = true;
 % to enable a criterion - corresponding value should be > 0, this value 
 % will be normalized and used as a threshold during refinement procedure
 criter_viscosity = [];
+criter_density = [];
 criter_velocity_x = 1e-3;
 criter_velocity_y = 1e-3;
 

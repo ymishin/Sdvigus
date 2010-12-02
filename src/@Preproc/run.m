@@ -225,6 +225,9 @@ if (create_ctrl)
     if (~exist('criter_viscosity','var') || isempty(criter_viscosity))
         criter_viscosity = 0;
     end
+    if (~exist('criter_density','var') || isempty(criter_density))
+        criter_density = 0;
+    end    
     if (~exist('criter_velocity_x','var') || isempty(criter_velocity_x))
         criter_velocity_x = 0;
     end
@@ -264,6 +267,7 @@ if (create_ctrl)
     hdf5write(fname, '/grids/adapt_grid', uint8(adapt_grid), w, a);
     hdf5write(fname, '/grids/jmax', jmax, w, a);
     hdf5write(fname, '/grids/criter_viscosity', criter_viscosity, w, a);
+    hdf5write(fname, '/grids/criter_density', criter_density, w, a);
     hdf5write(fname, '/grids/criter_velocity_x', criter_velocity_x, w, a);
     hdf5write(fname, '/grids/criter_velocity_y', criter_velocity_y, w, a);
     hdf5write(fname, '/solvers/stokes_enabled', uint8(stokes_enabled), w, a);

@@ -3,6 +3,8 @@ function generate(obj)
 %
 % $Id$
 
+global verbose;
+
 % check if domain size was changed
 if (any(obj.stokes.dsize ~= obj.domain.size))
     obj.stokes.dsize = obj.domain.size;

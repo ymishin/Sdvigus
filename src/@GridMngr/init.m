@@ -19,6 +19,7 @@ if (jmax > 1)
     mask = logical(hdf5read(df, '/grids/mask'));
     obj.adapt_grid = logical(hdf5read(cf, '/grids/adapt_grid'));
     obj.adapt_criteria.viscosity = hdf5read(cf, '/grids/criter_viscosity');
+    obj.adapt_criteria.density = hdf5read(cf, '/grids/criter_density');
     obj.adapt_criteria.velocity_x = hdf5read(cf, '/grids/criter_velocity_x');
     obj.adapt_criteria.velocity_y = hdf5read(cf, '/grids/criter_velocity_y');
 else

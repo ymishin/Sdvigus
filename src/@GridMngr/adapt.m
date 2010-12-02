@@ -35,6 +35,15 @@ if (e > 0)
     eps(n) = e * abs(max(field{n}(:)) - min(field{n}(:))); % normalize
 end
 
+% Density field (interpolate from particles)
+e = obj.adapt_criteria.density;
+if (e > 0)
+    n = n + 1;
+    interp_prop = 'DENS';
+    field{n} = obj.particles.interp2node(mask, elem_order, interp_prop);
+    eps(n) = e * abs(max(field{n}(:)) - min(field{n}(:))); % normalize
+end
+
 % X-Velocity
 e = obj.adapt_criteria.velocity_x;
 if (e > 0)
