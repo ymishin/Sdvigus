@@ -137,7 +137,7 @@ parfor iel = 1:num_elem
         stress_yield = cosd(phi) .* cohesion + ...
                        sind(phi) .* (Np * pressure(:,iel));
         %stress_yield = max(cosd(phi) .* cohesion, stress_yield);
-        % new effective viscoties
+        % new effective viscosities
         new_visc = min(new_visc, 0.5 * stress_yield ./ edata(:,israte));
     end
     
