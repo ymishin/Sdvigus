@@ -11,14 +11,6 @@ nstep = obj.nstep;
 snstep = num2str(nstep, '%05d');
 outdir = obj.outdir;
 
-% execute custom functions
-if (isfield(desc,'custom_funcs'))
-    custom_funcs = desc.custom_funcs;
-    for i = 1:length(custom_funcs)
-        custom_funcs{i}();
-    end
-end
-
 % tune the plot
 box on;
 axis xy equal;
@@ -86,13 +78,17 @@ if (isfield(desc,'colorbar') && ~isempty(desc.colorbar))
         if (isfield(cbar,'fsize') && ~isempty(cbar.fsize))
             set(hcb,'FontSize',cbar.fsize);
         end
-        if (isfield(cbar,'tick') && ~isempty(cbar.tick))
-            set(hcb,'XTick',cbar.tick);
-            set(hcb,'YTick',cbar.tick);
+        if (isfield(cbar,'xtick') && ~isempty(cbar.xtick))
+            set(hcb,'XTick',cbar.xtick);
         end
-        if (isfield(cbar,'ticklabel') && ~isempty(cbar.ticklabel))
-            set(hcb,'XTickLabel',cbar.ticklabel);
-            set(hcb,'YTickLabel',cbar.ticklabel);
+        if (isfield(cbar,'ytick') && ~isempty(cbar.ytick))
+            set(hcb,'YTick',cbar.ytick);
+        end
+        if (isfield(cbar,'xticklabel') && ~isempty(cbar.xticklabel))
+            set(hcb,'XTickLabel',cbar.xticklabel);
+        end
+        if (isfield(cbar,'yticklabel') && ~isempty(cbar.yticklabel))
+            set(hcb,'YTickLabel',cbar.yticklabel);
         end
         if (isfield(cbar,'ticklenf') && ~isempty(cbar.ticklenf))
             set(hcb,'TickLength',cbar.ticklenf*get(gca,'TickLength'))
@@ -103,6 +99,14 @@ if (isfield(desc,'colorbar') && ~isempty(desc.colorbar))
         if (isfield(cbar,'awidth') && ~isempty(cbar.awidth))
             set(hcb,'LineWidth',cbar.awidth);
         end
+    end
+end
+
+% execute custom functions
+if (isfield(desc,'custom_funcs'))
+    custom_funcs = desc.custom_funcs;
+    for i = 1:length(custom_funcs)
+        custom_funcs{i}(obj);
     end
 end
 
