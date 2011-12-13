@@ -87,28 +87,22 @@ The following MATLAB functions can be found at the top level of the directory wh
 
 % informal
 \item \textbf{Usage example}
-\item \textbf{Usage demonstration}
 
-Run MATLAB and change the current directory to the directory which contains the unpacked distribution.
+Run MATLAB and change the current directory to the directory which contains the unpacked distribution. Few example models are provided in the directory \texttt{examples}. The following is the demonstration how to run the code for the Rayleigh-Taylor instability model located in the directory \texttt{examples/rt} (Linux environment is assumed here, under Windows use \texttt{\symbol{`\\}} instead of \texttt{/}).
 
-    Some (few) examples are provided in the examples directory
-    supplied with the code
-
-The following is the demonstration how to run the code for the Rayleigh-Taylor instability model provided in the directory \texttt{examples/rt} (Linux environment is assumed here, under Windows use \texttt{\symbol{`\\}} instead of \texttt{/}).
-
-First, the preprocessor has to be run. The preprocessor will read model description script \texttt{model\_desc.m} located at the model directory \texttt{examples/rt} and will create model input files. To run the preprocessor, type in the Command Window:
+First, the preprocessor has to be run. The preprocessor will read the model description script \texttt{model\_desc.m} located in the model directory \texttt{examples/rt} and will create model input files. To run the preprocessor, type in the Command Window:
 
 \leftskip=1em \texttt{\textgreater\ sdvigus\_preproc(\textquotesingle examples/rt\textquotesingle)}
 
 \leftskip=0em
 
-After model input files are created, the simulator can be run. The simulator will read model input files (produced by the preprocessor) and will perform simulation of the model. All modeling results will be stored in the model directory. To run the simulator, type in the Command Window:
+After model input files are created, the simulator can be run. The simulator will read model input files (produced by the preprocessor) and will perform simulation of the model. All simulation results will be stored in the model directory. To run the simulator, type in the Command Window:
 
 \leftskip=1em \texttt{\textgreater\ sdvigus\_simulator(\textquotesingle examples/rt\textquotesingle)}
 
 \leftskip=0em
 
-Finally, the postprocessor has to be run to analyze simulation results. The postprocessor will read \texttt{postproc\_desc.m} located at the model directory \texttt{examples/rt}, and will process the modeling results. The output of the postprocessor will be stored in the directory \texttt{postproc\_output} which will be created in the model directory \texttt{examples/rt}. To run the postprocessor, type in the Command Window:
+Finally, the postprocessor has to be run to analyze simulation results. The postprocessor will read \texttt{postproc\_desc.m} located in the model directory \texttt{examples/rt} and will process the modeling results. The output of the postprocessor will be stored in the directory \texttt{postproc\_output} which will be created in the model directory \texttt{examples/rt}. To run the postprocessor, type in the Command Window:
 
 \leftskip=1em \texttt{\textgreater\ sdvigus\_postproc(\textquotesingle examples/rt\textquotesingle)}
 
