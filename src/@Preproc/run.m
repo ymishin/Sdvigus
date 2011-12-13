@@ -271,9 +271,9 @@ if (create_ctrl)
     hdf5write(fname, '/grids/criter_velocity_x', criter_velocity_x, w, a);
     hdf5write(fname, '/grids/criter_velocity_y', criter_velocity_y, w, a);
     hdf5write(fname, '/solvers/stokes_enabled', uint8(stokes_enabled), w, a);
-    hdf5write(fname, '/solvers/PH/k', PH_k, w, a);
-    hdf5write(fname, '/solvers/PH/maxdiv', PH_maxdiv, w, a);
-    hdf5write(fname, '/solvers/PH/maxiter', PH_maxiter, w, a);
+    hdf5write(fname, '/solvers/uzawa/k', uzawa_k, w, a);
+    hdf5write(fname, '/solvers/uzawa/maxdiv', uzawa_maxdiv, w, a);
+    hdf5write(fname, '/solvers/uzawa/maxiter', uzawa_maxiter, w, a);
     hdf5write(fname, '/solvers/nonlinear/norm', nonlinear_norm, w, a);
     hdf5write(fname, '/solvers/nonlinear/tol', nonlinear_tol, w, a);
     hdf5write(fname, '/solvers/nonlinear/maxiter', nonlinear_maxiter, w, a);

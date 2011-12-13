@@ -36,10 +36,10 @@ end
 obj.solv_params.nonlinear_tol = hdf5read(cf, '/solvers/nonlinear/tol');
 obj.solv_params.nonlinear_maxiter = hdf5read(cf, '/solvers/nonlinear/maxiter');
 
-% parameters for Powell-Hestenes solver (Q1P0, Q2P-1)
-obj.solv_params.PH_k = hdf5read(cf, '/solvers/PH/k');
-obj.solv_params.PH_maxdiv = hdf5read(cf, '/solvers/PH/maxdiv');
-obj.solv_params.PH_maxiter = hdf5read(cf, '/solvers/PH/maxiter');
+% parameters for Uzawa solver (Q1P0, Q2P-1)
+obj.solv_params.uzawa_k = hdf5read(cf, '/solvers/uzawa/k');
+obj.solv_params.uzawa_maxdiv = hdf5read(cf, '/solvers/uzawa/maxdiv');
+obj.solv_params.uzawa_maxiter = hdf5read(cf, '/solvers/uzawa/maxiter');
 
 % external force field
 obj.Fext = hdf5read(cf, '/Fext');

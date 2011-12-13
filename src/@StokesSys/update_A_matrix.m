@@ -43,7 +43,9 @@ A_j_ind = A_j_ind(:); A_i_ind = A_i_ind(:);
 % element matrix A for reference element
 elemA = obj.elemA;
 
-% compute matrices for actual elements and store them in vector-format
+% compute matrices for actual elements and store them in triplet format
+% see discussion here: http://blogs.mathworks.com/loren/2007/03/01/
+%                      creating-sparse-finite-element-matrices-in-matlab/
 for iel = 1:num_elem
 
     % velocity and pressure equations

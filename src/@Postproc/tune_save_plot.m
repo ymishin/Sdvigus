@@ -14,8 +14,8 @@ outdir = obj.outdir;
 % tune the plot
 box on;
 axis xy equal;
-if (isfield(desc,'domain') && ~isempty(desc.domain))
-    axis(desc.domain);
+if (isfield(desc,'axis') && ~isempty(desc.axis))
+    axis(desc.axis);
 else
     axis(obj.domain.size);
 end
@@ -25,8 +25,8 @@ end
 if (isfield(desc,'clim') && ~isempty(desc.clim))
     caxis(desc.clim);
 end
-if (isfield(desc,'fsize') && ~isempty(desc.fsize))
-    set(gca,'FontSize',desc.fsize);
+if (isfield(desc,'fontsize') && ~isempty(desc.fontsize))
+    set(gca,'FontSize',desc.fontsize);
 end
 if (isfield(desc,'title') && ~isempty(desc.title))
     title(eval(desc.title));
@@ -55,14 +55,14 @@ end
 if (isfield(desc,'yticklabel') && ~isempty(desc.yticklabel))
     set(gca,'YTickLabel',desc.yticklabel);
 end
-if (isfield(desc,'ticklenf') && ~isempty(desc.ticklenf))
-    set(gca,'TickLength',desc.ticklenf*get(gca,'TickLength'))
+if (isfield(desc,'ticklength') && ~isempty(desc.ticklength))
+    set(gca,'TickLength',desc.ticklength*get(gca,'TickLength'))
 end
 if (isfield(desc,'tickdir') && ~isempty(desc.tickdir))
     set(gca,'TickDir',desc.tickdir);
 end
-if (isfield(desc,'awidth') && ~isempty(desc.awidth))
-    set(gca,'LineWidth',desc.awidth);
+if (isfield(desc,'linewidth') && ~isempty(desc.linewidth))
+    set(gca,'LineWidth',desc.linewidth);
 end
 set(gca,'Layer','top');
 
@@ -75,8 +75,8 @@ if (isfield(desc,'colorbar') && ~isempty(desc.colorbar))
         else
             hcb = colorbar;
         end
-        if (isfield(cbar,'fsize') && ~isempty(cbar.fsize))
-            set(hcb,'FontSize',cbar.fsize);
+        if (isfield(cbar,'fontsize') && ~isempty(cbar.fontsize))
+            set(hcb,'FontSize',cbar.fontsize);
         end
         if (isfield(cbar,'xtick') && ~isempty(cbar.xtick))
             set(hcb,'XTick',cbar.xtick);
@@ -90,14 +90,14 @@ if (isfield(desc,'colorbar') && ~isempty(desc.colorbar))
         if (isfield(cbar,'yticklabel') && ~isempty(cbar.yticklabel))
             set(hcb,'YTickLabel',cbar.yticklabel);
         end
-        if (isfield(cbar,'ticklenf') && ~isempty(cbar.ticklenf))
-            set(hcb,'TickLength',cbar.ticklenf*get(gca,'TickLength'))
+        if (isfield(cbar,'ticklength') && ~isempty(cbar.ticklength))
+            set(hcb,'TickLength',cbar.ticklengths*get(gca,'TickLength'))
         end
         if (isfield(cbar,'tickdir') && ~isempty(cbar.tickdir))
             set(hcb,'TickDir',cbar.tickdir);
         end
-        if (isfield(cbar,'awidth') && ~isempty(cbar.awidth))
-            set(hcb,'LineWidth',cbar.awidth);
+        if (isfield(cbar,'linewidth') && ~isempty(cbar.linewidth))
+            set(hcb,'LineWidth',cbar.linewidth);
         end
     end
 end

@@ -1,6 +1,10 @@
 function build_system_matrices(obj, elem_visc, elem_dens)
 % Construct all system matrices for Stokes system.
 %
+% Some ideas came from:
+% M. Dabrowski et al., "MILAMIN: MATLAB-based finite element method 
+% solver for large problems", Geochem.Geophys.Geosyst. 9(4), Q04030, 2008.
+%
 % $Id$
 
 global verbose;
@@ -66,10 +70,6 @@ Np = ShapeFuncs.compute(inp_coord, num_pnode_el);
 D = [ 2  0  0; ...
       0  2  0; ...
       0  0  1 ];
-  
-% D = [ 4/3 -2/3  0; ...
-%      -2/3  4/3  0; ...
-%         0    0  1 ];
 
 % preallocate
 B = zeros(3, num_veq_el);
@@ -99,14 +99,15 @@ Q_j_ind = Q_j_ind(:); Q_i_ind = Q_i_ind(:);
 [MC_j_ind, MC_i_ind] = meshgrid(1:num_peq_el, 1:num_peq_el);
 MC_j_ind = MC_j_ind(:); MC_i_ind = MC_i_ind(:);
 
-% Jacobian for abstract element at finest level
+% inverse and determinant of Jacobian matrix 
+% for abstract element at finest level
 dx = obj.grids.stokes.elemhl(1);
 dy = obj.grids.stokes.elemhl(2);
 invJ = [ 2/dx 0; 0 2/dy ];
 detJ = dx*dy/4;
 
 % perform numerical integration and construct element matrices 
-% for reference element at finest level
+% for abstract element at finest level
 for i = 1:num_inp
         % shape functions at current integration point
         Nvi  = Nv(i,:);
@@ -137,7 +138,7 @@ for i = 1:num_inp
         elemRHS = elemRHS + wdetJ * r(:);
 end
 
-% store element matrix A for reference element
+% store element matrix A for abstract element
 obj.elemA = elemA;
 
 % scaling factor for invJ and detJ
@@ -151,7 +152,9 @@ else
     sf = ones(num_elem, 1);
 end
 
-% compute matrices for actual elements and store them in vector-format
+% compute matrices for actual elements and store them in triplet format
+% see discussion here: http://blogs.mathworks.com/loren/2007/03/01/
+%                      creating-sparse-finite-element-matrices-in-matlab/
 for iel = 1:num_elem
 
     % velocity and pressure equations
@@ -169,7 +172,7 @@ for iel = 1:num_elem
     Q_j(:,iel) = peq_el(Q_j_ind);
     Q_s(:,iel) = sf(iel) * elemQ(:); % (1/sf) * sf^2 == sf
     
-    % matrices M and C
+    % matrix C or M
     MC_i(:,iel) = peq_el(MC_i_ind);
     MC_j(:,iel) = peq_el(MC_j_ind);
     if (elem_type == 2)
@@ -192,7 +195,7 @@ else
     sparsef = @sparse;
 end
 
-% create matrices from vectors
+% create matrices from triplets
 % A
 A = sparsef(A_i(:), A_j(:), A_s(:), num_veq, num_veq); % lower triangular
 obj.A = A + tril(A,-1)';

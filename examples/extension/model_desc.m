@@ -10,10 +10,10 @@ create_mtrl = true;
 create_ctrl = true;
 
 % domain dimensions
-xmin = 0.0;
-xmax = 1.0;
-ymin = 0.0;
-ymax = 2.0;
+xmin = -1.5;
+xmax =  1.5;
+ymin =  0.0;
+ymax =  1.0;
 
 % change size of the domain according to normal componenets of velocity BC
 change_domain_size = true;
@@ -23,12 +23,12 @@ change_domain_size = true;
 % finest grid level and have to be Mx * 2^(jmax-1) and My * 2^(jmax-1) in
 % x- and y-directions respectively (Mx and My are arbitrary and determine
 % resolution at coarsest grid level)
-num_elem_x = 128;
-num_elem_y = 256;
+num_elem_x = 12 * 2^(6-1);
+num_elem_y =  4 * 2^(6-1);
 
 % total number of grid levels in case of multilevel grid
 % if jmax equals 1 - simple equidistant grid will be used
-jmax = 1;
+jmax = 6;
 
 % level of the initial grid, can be from jmax (finest) to 2 (last but coarsest)
 % resolution of the initial grid will be:
@@ -42,10 +42,10 @@ adapt_grid = true;
 % criteria for adaptive grid refinement
 % to enable a criterion - corresponding value should be > 0, this value 
 % will be normalized and used as a threshold during refinement procedure
-criter_viscosity = 1e-3;
-criter_density = [];
-criter_velocity_x = 1e-1;
-criter_velocity_y = 1e-1;
+criter_viscosity  = [];
+criter_density    = [];
+criter_velocity_x = 1e-3;
+criter_velocity_y = 1e-3;
 
 % element type
 % 1 - Q1P0  (bilinear velocity, constant discontinuous pressure)
@@ -53,35 +53,37 @@ criter_velocity_y = 1e-1;
 % 3 - Q2P-1 (biquadratic velocity, linear discontinuous pressure)
 %   in case of Q1Q1 - the coupled system will be solved at once
 %   in case of Q1P0 and Q2P-1 - the system will be uncoupled 
-%   and will be solved using Powell-Hestenes iterations
-elem_type = 3;
+%   and will be solved using Uzawa iterations
+elem_type = 2;
+
+% enable Stokes solver
+stokes_enabled = true;
 
 % velocity boundary conditions
 % unconstrained velocities have to be set to []
-bvx_left   = 0.0; bvy_left   =  [];
-bvx_right  = 0.0; bvy_right  =  [];
-bvx_bottom =  []; bvy_bottom = 0.0;
-bvx_top    =  []; bvy_top    = 0.0;
-
-% make boundary exits
-left_exit  = false;
-right_exit = false;
+bvx_left   = -0.05; bvy_left   =  [];
+bvx_right  =  0.05; bvy_right  =  [];
+bvx_bottom =    []; bvy_bottom = 0.0;
+bvx_top    =    []; bvy_top    =  [];
 
 % external force field
 Fext(1) =   0.0;  % x-direction
 Fext(2) = -10.0;  % y-direction
 
-% TIME PARAMETERS
 % total time of simulation
-total_time = 10.0;
+total_time = 0.40;
+
 % time step
 % 'dt_default' allows to set constant time step manually
 % 'courant' is Courant number and can be from 0.0 (meaningless) to 1.0
 % at least one of them has to be determined, if both are determined - actual 
 % time step will be minimum between dt_default and one calculated based on 
 % Courant number
-dt_default = [];
-courant    = 0.7;
+dt_default = 0.02;
+courant    = [];
+
+% maximum number of simulation steps
+max_nstep = Inf;
 
 % initial particle density per element at finest level in x- and y-directions
 % (total particle density per element equals product of these two)
@@ -90,7 +92,7 @@ num_part_elem_y = 3;
 
 % random noise for particle distribution
 % can be from 0.0 (no noise) to 1.0 (highest noise)
-part_noise = 0.2;
+part_noise = 0.1;
 
 % zones of initial material distribution
 % 1. each zone is specified by the following format:
@@ -104,8 +106,15 @@ part_noise = 0.2;
 % 4. if there are no constraints the zone will be equal to the whole domain
 % 5. in case of zones overlap the following zone in the list has the priority
 mtrl_zones = { ...
-    { 1 }, ...
-    { 2, @(x,y)(x > 0.3), @(x,y)(x < 0.7), @(x,y)(y > 1.3), @(x,y)(y < 1.7) } };
+    { 1, @(x,y)(y < 0.80) }, { 2, @(x,y)(y < 0.75) }, ...
+    { 1, @(x,y)(y < 0.70) }, { 2, @(x,y)(y < 0.65) }, ...
+    { 1, @(x,y)(y < 0.60) }, { 2, @(x,y)(y < 0.55) }, ...
+    { 1, @(x,y)(y < 0.50) }, { 2, @(x,y)(y < 0.45) }, ...
+    { 1, @(x,y)(y < 0.40) }, { 2, @(x,y)(y < 0.35) }, ...
+    { 1, @(x,y)(y < 0.30) }, { 2, @(x,y)(y < 0.25) }, ...
+    { 1, @(x,y)(y < 0.20) }, { 2, @(x,y)(y < 0.15) }, ...
+    { 1, @(x,y)(y < 0.10) }, { 2, @(x,y)(y < 0.05) }, ...
+    { 3, @(x,y)(x > -0.03), @(x,y)(x < 0.03), @(x,y)(y < 0.06) } };
 
 % material library
 %   mtrl_dens      - density
@@ -117,24 +126,36 @@ mtrl_zones = { ...
 %   mtrl_phi       - friction angle
 %   mtrl_weakhard  - strain weakening / hardening
 %
-% material 1
+% materials 1,2 (stripes)
 m = 1;
-mtrl_dens(m) = 1.0;
-mtrl_visc(m) = 1.0;
-% material 2 (block)
+mtrl_dens(m)          = 1.0;
+mtrl_visc(m)          = 100.0;
+mtrl_cohesion(1:2,m)  = [4.0 1.0];
+mtrl_phi(1:2,m)       = [0.0 0.0];
+mtrl_weakhard(1:2,m)  = [0.0 0.1];
 m = 2;
-mtrl_dens(m) = 3.0;
-mtrl_visc(m) = 10000.0;
+mtrl_dens(m)          = mtrl_dens(1);
+mtrl_visc(m)          = mtrl_visc(1);
+mtrl_cohesion(1:2,m)  = mtrl_cohesion(1:2,1);
+mtrl_phi(1:2,m)       = mtrl_phi(1:2,1);
+mtrl_weakhard(1:2,m)  = mtrl_weakhard(1:2,1);
+% material 3 (weak inclusion)
+m = 3;
+mtrl_dens(m)          = 1.0;
+mtrl_visc(m)          = 1.0;
+mtrl_cohesion(1:2,m)  = [Inf Inf];
+mtrl_phi(1:2,m)       = [0.0 0.0];
+mtrl_weakhard(1:2,m)  = [0.0 0.0];
 % viscosity and density for empty space (air)
 dens0 = 0.00;
 visc0 = 0.01;
 
 % non-linear rheologies
-yielding_rheol = false;
+yielding_rheol = true;
 powerlaw_rheol = false;
 
 % Voronoi tessellation to maintain distribution of particles
-voronoi_enabled = true;
+voronoi_enabled = false;
 % resolution of Voronoi cells
 voronoi_res_x = 20;
 voronoi_res_y = 20;
@@ -142,28 +163,28 @@ voronoi_res_y = 20;
 % can be [] (undetermined), but if determined - Voronoi cells with 
 % max_area / min_area will splitted / destroyed (i.e. corresponding 
 % particles will be cloned / eliminated)
-max_area = 1/3;
-min_area = 1/27;
+max_area = 1/4;
+min_area = 1/30;
 % Voronoi cells corresponding to particles of 
 % fixed types will not be splitted / destroyed
 fixed_types = [];
 
-% parameters for Powell-Hestenes solver (will be used for Q1P0 and Q2P-1)
-% 'PH_k' is penalty parameter
-% 'PH_maxdiv' is maximum velocity divergence
-% 'PH_maxiter' is maximum number of PH iterations
-PH_k = 1e+7 * max(mtrl_visc);
-PH_maxdiv = 1e-12;
-PH_maxiter = 30;
+% parameters for Uzawa solver (will be used for Q1P0 and Q2P-1)
+% 'uzawa_k' is penalty parameter
+% 'uzawa_maxdiv' is maximum velocity divergence
+% 'uzawa_maxiter' is maximum number of PH iterations
+uzawa_k       = 1e+5 * max(mtrl_visc);
+uzawa_maxdiv  = 1e-12;
+uzawa_maxiter = 10;
 
 % parameters for non-linear iterations
 % 'nonlinear_norm' determines which norm to use for estimation of 
 %  nonlinear residual, it can be 1 (L2 norm) or 2 (infinite norm)
 % 'nonlinear_tol' is tolerance, normalized residual will be tested against it
 % 'nonlinear_maxiter' is maximum number of nonlinear iterations to perform
-nonlinear_norm = 1;
-nonlinear_tol = 1.0e-3;
-nonlinear_maxiter = 30;
+nonlinear_norm    = 1;
+nonlinear_tol     = 1e-3;
+nonlinear_maxiter = 500;
 
 % perform output ?
 output_enabled = true;

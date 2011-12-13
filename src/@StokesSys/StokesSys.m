@@ -68,7 +68,7 @@ classdef StokesSys < handle
         solve_nonlinear(obj);
         solve_linear(obj);
         solve_linear_coupled(obj);
-        solve_linear_PH(obj);
+        solve_linear_uzawa(obj);
         
     end
     

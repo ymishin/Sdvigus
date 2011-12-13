@@ -54,9 +54,6 @@ classdef Particles < handle
         [elem_visc, elem_dens] = average_visc_dens(obj);
         elem_visc = update_visceff(obj, pressure);
         
-        % compute strain rate invariant
-        %compute_strain_rate(obj);
-        
     end
     
     methods (Access = protected)

@@ -1,5 +1,9 @@
-function solve_linear_PH(obj)
-% Solve Stokes system using Powell-Hestenes iterations.
+function solve_linear_uzawa(obj)
+% Solve Stokes system using Uzawa iterations.
+% 
+% Some ideas came from:
+% M. Dabrowski et al., "MILAMIN: MATLAB-based finite element method 
+% solver for large problems", Geochem.Geophys.Geosyst. 9(4), Q04030, 2008.
 %
 % $Id$
 
@@ -10,9 +14,9 @@ if (verbose.level > 3), spval = 2; end;
 t = tic;
 
 % parameters
-k = obj.solv_params.PH_k;
-maxdiv = obj.solv_params.PH_maxdiv;
-maxiter = obj.solv_params.PH_maxiter;
+k = obj.solv_params.uzawa_k;
+maxdiv = obj.solv_params.uzawa_maxdiv;
+maxiter = obj.solv_params.uzawa_maxiter;
 
 % all required data
 bc    = obj.bc;
@@ -60,7 +64,7 @@ spparms('spumoni', spval);
 A = chol(A, 'lower');
 spparms('spumoni', 0);
 
-% Powell-Hestenes loop
+% Uzawa loop
 j = 0;
 while (true)
     % compute velocity
@@ -85,7 +89,7 @@ obj.velocity(:,2) = v(2:2:end);
 obj.pressure = p;
 
 t = toc(t);
-m = sprintf('Stokes solver (PH: %d) ... %f', j, t);
+m = sprintf('Stokes solver (Uzawa: %d) ... %f', j, t);
 verbose.disp(m, 2);
 
 end

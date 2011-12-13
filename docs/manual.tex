@@ -1,0 +1,124 @@
+\documentclass[a4paper,onesided,12pt]{letter}
+\usepackage[protrusion=true,expansion=true]{microtype}
+\usepackage[utf8]{inputenc}
+\usepackage{textcomp}
+%\usepackage[text={15cm,26cm},centering]{geometry}
+\usepackage[hmargin=2.5cm,vmargin=1.9cm]{geometry}
+\linespread{1.2}
+\pagestyle{empty}
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\sffamily
+SDVIGUS \input{../.ver}}
+
+{\bfseries\sffamily
+Copyright \copyright\ 2008-2011 Yury Mishin \textbar\ yury.mishin@gmail.com}
+\end{center}
+
+\makebox[\textwidth]{
+\rule{1.05\linewidth}{0.35mm}}
+
+%\begin{compactitem}
+\begin{list}{\labelitemi}{\leftmargin=1em}
+
+\item \textbf{Requirements}
+
+\begin{list}{\labelitemii}{\leftmargin=1em}
+
+\item Windows or Linux environment.
+
+\item MATLAB R2008a or later.
+
+\item MATLAB Parallel Computing Toolbox in order to run in a parallel mode (\textsl{optional}).
+
+%\item \textsl{Optional}: SuiteSparse package for better performance (although speedup is not dramatic). SuiteSparse will be used automatically if installed and can be found in the Matlab path.
+
+\end{list}
+
+\item \textbf{Installation}
+
+Just unpack the distribution to some directory on the hard disk, e.g.:
+
+on Windows --- \texttt{c:\symbol{`\\}sdvigus}
+
+on Linux --- \texttt{/home/user/sdvigus}
+
+%\item \textbf{Usage description (formal)}
+\item \textbf{Formal description}
+
+%The installation directory contains three functions which can be run either from Matlab Command Window, or in Matlab batch mode (using Matlab %\texttt{-r} argument). These functions are:
+%These scripts can be run either from Matlab Command Window, or in Matlab batch mode (using Matlab \texttt{-r} %argument). The syntaxes for these functions is the following:
+%\texttt{\$SDHOME}:
+%The following MATLAB functions can be found at the top level of the installation directory:
+The following MATLAB functions can be found at the top level of the directory which contains the unpacked distribution:
+
+\leftskip=1em \texttt{sdvigus\_preproc(model\_dir, vrbl, do\_exit)}
+
+\leftskip=2em The preprocessor --- reads model description script \texttt{model\_desc.m} supplied by the user and creates model input files in HDF5 format.
+
+\leftskip=1em \texttt{sdvigus\_simulator(model\_dir, vrbl, ncpu, do\_exit)}
+
+\leftskip=2em The simulator --- reads model input files, performs numerical simulation of a model and saves all modeling results in HDF5 format.
+
+\leftskip=1em \texttt{sdvigus\_postproc(model\_dir, vrbl, ncpu, do\_exit)}
+
+\leftskip=2em The postprocessor --- reads postprocessing description script \texttt{postproc\_desc.m} supplied by the user and processes modeling results accordingly.
+
+\leftskip=0em The parameters of these functions are:
+
+\leftskip=1em \texttt{model\_dir}
+
+\leftskip=2em Relative or absolute path to a model directory. The model directory contains all model related input and output files. Model and postprocessing description scripts \texttt{model\_desc.m} and \texttt{postproc\_desc.m} have to be located in the model directory.
+
+\leftskip=1em \texttt{vrbl} (\textsl{optional})
+
+\leftskip=2em Verbosity level. This can be from 0 (almost silent) to 3 (most verbose). Default value: 1.
+
+\leftskip=1em \texttt{ncpu} (\textsl{optional})
+
+\leftskip=2em Number of CPUs to use when running in a parallel mode. Parallel Computing Toolbox is required for \texttt{ncpu} \textgreater\ 0. The maximum allowed number depends on a MATLAB version. Default value: 0 (sequential mode without Parallel Toolbox).
+
+\leftskip=1em \texttt{do\_exit} (\textsl{optional})
+
+\leftskip=2em Flag which, if not 0, specifies that MATLAB should be terminated after function execution. This is useful when running in a batch mode (with \texttt{-r} option). Default value: 0.
+
+\leftskip=0em
+
+% informal
+\item \textbf{Usage example}
+\item \textbf{Usage demonstration}
+
+Run MATLAB and change the current directory to the directory which contains the unpacked distribution.
+
+    Some (few) examples are provided in the examples directory
+    supplied with the code
+
+The following is the demonstration how to run the code for the Rayleigh-Taylor instability model provided in the directory \texttt{examples/rt} (Linux environment is assumed here, under Windows use \texttt{\symbol{`\\}} instead of \texttt{/}).
+
+First, the preprocessor has to be run. The preprocessor will read model description script \texttt{model\_desc.m} located at the model directory \texttt{examples/rt} and will create model input files. To run the preprocessor, type in the Command Window:
+
+\leftskip=1em \texttt{\textgreater\ sdvigus\_preproc(\textquotesingle examples/rt\textquotesingle)}
+
+\leftskip=0em
+
+After model input files are created, the simulator can be run. The simulator will read model input files (produced by the preprocessor) and will perform simulation of the model. All modeling results will be stored in the model directory. To run the simulator, type in the Command Window:
+
+\leftskip=1em \texttt{\textgreater\ sdvigus\_simulator(\textquotesingle examples/rt\textquotesingle)}
+
+\leftskip=0em
+
+Finally, the postprocessor has to be run to analyze simulation results. The postprocessor will read \texttt{postproc\_desc.m} located at the model directory \texttt{examples/rt}, and will process the modeling results. The output of the postprocessor will be stored in the directory \texttt{postproc\_output} which will be created in the model directory \texttt{examples/rt}. To run the postprocessor, type in the Command Window:
+
+\leftskip=1em \texttt{\textgreater\ sdvigus\_postproc(\textquotesingle examples/rt\textquotesingle)}
+
+\leftskip=0em
+
+\item \textbf{Feedback}
+
+I would highly appreciate any feedback. Please don't hesitate to contact me at \textsl{\textbf{yury.mishin@gmail.com}} in case you have any questions, comments, suggestions, ideas, et cetera.
+
+\end{list}
+%\end{compactitem}
+
+\end{document} 

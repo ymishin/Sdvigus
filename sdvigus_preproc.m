@@ -16,7 +16,7 @@ version = csvread([shome, '.ver']);
 % verbosity level
 global verbose;
 if (~exist('vrbl','var') || isempty(vrbl))
-    vrbl = 0;
+    vrbl = 1;
 end
 verbose = Verbose(vrbl);
 

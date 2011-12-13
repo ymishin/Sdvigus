@@ -8,7 +8,7 @@ switch obj.elem_type
     
     case {1,3}
         % Q1P0, Q2P-1
-        obj.solve_linear_PH();
+        obj.solve_linear_uzawa();
         
     case 2
         % Q1Q1

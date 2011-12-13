@@ -44,7 +44,9 @@ if (elem_type == 2)
     l = 1;
 end
 
-% construct constraint matrices in vector-format
+% construct constraint matrices in triplet format
+% see discussion here: http://blogs.mathworks.com/loren/2007/03/01/
+%                      creating-sparse-finite-element-matrices-in-matlab/
 switch elem_type
     
     % Q1P0, Q1Q1

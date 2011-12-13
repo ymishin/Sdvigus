@@ -16,15 +16,15 @@ if (isfield(desc,'log') && ~isempty(desc.log) && desc.log)
 end
 
 % plot particles
-if (isfield(desc,'marksize') && ~isempty(desc.marksize))
-    marksize = desc.marksize;
+if (isfield(desc,'partsize') && ~isempty(desc.partsize))
+    partsize = desc.partsize;
 else
-    marksize = 1.0;
+    partsize = 1.0;
 end
-if (isfield(desc,'markfilled') && ~isempty(desc.markfilled) && desc.markfilled)
-    scatter(coord(:,1), coord(:,2), marksize, data, 'filled');
+if (isfield(desc,'partfilled') && ~isempty(desc.partfilled) && desc.partfilled)
+    scatter(coord(:,1), coord(:,2), partsize, data, 'filled');
 else
-    scatter(coord(:,1), coord(:,2), marksize, data);
+    scatter(coord(:,1), coord(:,2), partsize, data);
 end
 
 clear coord data;
