@@ -5,7 +5,7 @@ function cfunc(postproc)
 model = postproc.model_name;
 time = postproc.current_time;
 nstep = postproc.nstep;
-size = postproc.domain.size;
-size0 = postproc.domain.size0;
+dsize = postproc.domain.size;
+dsize0 = postproc.domain.size0;
 
 end

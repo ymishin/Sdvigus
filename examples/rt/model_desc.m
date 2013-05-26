@@ -53,7 +53,7 @@ criter_velocity_y = [];
 % 3 - Q2P-1 (biquadratic velocity, linear discontinuous pressure)
 %   in case of Q1Q1 - the coupled system will be solved at once
 %   in case of Q1P0 and Q2P-1 - the system will be uncoupled 
-%   and will be solved using Powell-Hestenes iterations
+%   and will be solved using Uzawa iterations
 elem_type = 3;
 
 % enable Stokes solver
@@ -154,7 +154,7 @@ fixed_types = [];
 % parameters for Uzawa solver (will be used for Q1P0 and Q2P-1)
 % 'uzawa_k' is penalty parameter
 % 'uzawa_maxdiv' is maximum velocity divergence
-% 'uzawa_maxiter' is maximum number of PH iterations
+% 'uzawa_maxiter' is maximum number of Uzawa iterations
 uzawa_k       = 1e+5 * max(mtrl_visc);
 uzawa_maxdiv  = 1e-12;
 uzawa_maxiter = 10;
