@@ -2,7 +2,6 @@
 \usepackage[protrusion=true,expansion=true]{microtype}
 \usepackage[utf8]{inputenc}
 \usepackage{textcomp}
-%\usepackage[text={15cm,26cm},centering]{geometry}
 \usepackage[hmargin=2.5cm,vmargin=1.9cm]{geometry}
 \linespread{1.2}
 \pagestyle{empty}
@@ -19,7 +18,6 @@ Copyright \copyright\ 2008-2013 Yury Mishin \textbar\ yury.mishin@gmail.com}
 \makebox[\textwidth]{
 \rule{1.05\linewidth}{0.35mm}}
 
-%\begin{compactitem}
 \begin{list}{\labelitemi}{\leftmargin=1em}
 
 \item \textbf{Requirements}
@@ -32,8 +30,6 @@ Copyright \copyright\ 2008-2013 Yury Mishin \textbar\ yury.mishin@gmail.com}
 
 \item MATLAB Parallel Computing Toolbox in order to run in a parallel mode (\textsl{optional}).
 
-%\item \textsl{Optional}: SuiteSparse package for better performance (although speedup is not dramatic). SuiteSparse will be used automatically if installed and can be found in the Matlab path.
-
 \end{list}
 
 \item \textbf{Installation}
@@ -44,13 +40,8 @@ on Windows --- \texttt{c:\symbol{`\\}sdvigus}
 
 on Linux --- \texttt{/home/user/sdvigus}
 
-%\item \textbf{Usage description (formal)}
 \item \textbf{Formal description}
 
-%The installation directory contains three functions which can be run either from Matlab Command Window, or in Matlab batch mode (using Matlab %\texttt{-r} argument). These functions are:
-%These scripts can be run either from Matlab Command Window, or in Matlab batch mode (using Matlab \texttt{-r} %argument). The syntaxes for these functions is the following:
-%\texttt{\$SDHOME}:
-%The following MATLAB functions can be found at the top level of the installation directory:
 The following MATLAB functions can be found at the top level of the directory which contains the unpacked distribution:
 
 \leftskip=1em \texttt{sdvigus\_preproc(model\_dir, vrbl, do\_exit)}
@@ -85,7 +76,6 @@ The following MATLAB functions can be found at the top level of the directory wh
 
 \leftskip=0em
 
-% informal
 \item \textbf{Usage example}
 
 Run MATLAB and change the current directory to the directory which contains the unpacked distribution. Few example models are provided in the directory \texttt{examples}. The following is the demonstration how to run the code for the Rayleigh-Taylor instability model located in the directory \texttt{examples/rt} (Linux environment is assumed here, under Windows use \texttt{\symbol{`\\}} instead of \texttt{/}).
@@ -113,6 +103,5 @@ Finally, the postprocessor has to be run to analyze simulation results. The post
 I would highly appreciate any feedback. Please don't hesitate to contact me at \textsl{\textbf{yury.mishin@gmail.com}} in case you have any questions, comments, suggestions, ideas, et cetera.
 
 \end{list}
-%\end{compactitem}
 
 \end{document}
